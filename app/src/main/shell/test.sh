@@ -1,0 +1,1 @@
+cat version.h  | grep GIT_BRANCH | head -n1 | awk '{print $3}'
