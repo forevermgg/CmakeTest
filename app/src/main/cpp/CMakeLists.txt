@@ -162,6 +162,7 @@ find_library( # Sets the name of the path variable.
 target_link_libraries( # Specifies the target library.
         buglyversion
         spdlog::spdlog
+        # LibUV::LibUV
         nlohmann_json::nlohmann_json
         # Links the target library to the log library
         # included in the NDK.

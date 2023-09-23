@@ -94,6 +94,10 @@ else()
   set(LibUV_VERSION_PATCH "")
   set(LibUV_VERSION "")
 endif()
+
+message("LibUV_VERSION_MAJOR = ${LibUV_VERSION_MAJOR}")
+message("LibUV_VERSION_MINOR = ${LibUV_VERSION_MINOR}")
+message("LibUV_VERSION_PATCH = ${LibUV_VERSION_PATCH}")
 unset(_LibUV_VERSION_MAJOR)
 unset(_LibUV_VERSION_MINOR)
 unset(_LibUV_VERSION_PATCH)
@@ -112,6 +116,7 @@ set(LIBUV_FOUND ${LibUV_FOUND})
 #-----------------------------------------------------------------------------
 # Provide documented result variables and targets.
 if(LibUV_FOUND)
+  message("LibUV_FOUND")
   set(LibUV_INCLUDE_DIRS ${LibUV_INCLUDE_DIR})
   set(LibUV_LIBRARIES ${LibUV_LIBRARY})
   if(NOT TARGET LibUV::LibUV)
