@@ -7,6 +7,7 @@ android {
     compileSdk 33
     ndkVersion "25.1.8937393"
     defaultConfig {
+        namespace = "com.test.buglyversion"
         applicationId "com.test.buglyversion"
         minSdk 21
         targetSdk 33
