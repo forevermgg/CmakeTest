@@ -24,6 +24,7 @@ include(../cmake/Test.cmake)
 # include(../cmake/external/googletest.cmake)
 include(../cmake/external/spdlog.cmake)
 include(../cmake/external/nlohmann_json.cmake)
+include(../cmake/FindLibUV.cmake)
 
 message("APP_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
