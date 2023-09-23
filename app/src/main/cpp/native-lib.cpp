@@ -5,6 +5,8 @@
 
 #include <spdlog/spdlog.h>
 #include <nlohmann/json.hpp>
+#include "version.h"
+#include "so_file_version.h"
 
 template <typename T>
 int getValueType(T v) {
