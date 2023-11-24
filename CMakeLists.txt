@@ -23,8 +23,3 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.gitmodules")
     execute_process (COMMAND git submodule update --init --recursive
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
-
-
-add_subdirectory(third_party/re2)
-include_directories(third_party/re2)
-set_property(TARGET re2 PROPERTY FOLDER "third_party")
