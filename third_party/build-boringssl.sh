@@ -3,7 +3,6 @@
 set -u
 set -e
 
-export BUILD_ARCHS=${BUILD_ARCHS:-arm_32 arm_64}
 export BORINGSSL_BRANCH=fips-20230428
 export BORINGSSL_ANDROID_API=21
 
@@ -17,7 +16,7 @@ export PREFIX=$BASE/prefix/boringssl
 
 if [ -d $PREFIX ]; then
     echo "Target folder exists. Remove $PREFIX to rebuild"
-    # exit 1
+    exit 0
 fi
 
 mkdir -p $PREFIX
@@ -31,88 +30,61 @@ echo "Building boringssl in $(realpath $PWD), deploying to $PREFIX"
 
 export PATH=$NDK/toolchains/llvm/prebuilt/darwin-x86_64/bin:$PATH
 
-function merge_crypto_ssl_lib () {
-  cd crypto && ar x libcrypto.a
-  cd ../ssl && ar x libssl.a && cd ..
-  ar r libboringssl.a ./crypto/*.o ./ssl/*.o
-}
-
 if [ -d "$PWD/build" ]; then
   echo "build_directory $PWD/build exists."
-  rm -r $PWD/build
-  exit 1
+  exit 0
 fi
 
 echo "Building boringssl in $(realpath $PWD)"
 
-if [[ "$BUILD_ARCHS" = *"arm_32"* ]]; then
-    build_directory="$PWD/build"
-    if [ -d "build_directory" ]; then
-      echo "build_directory $build_directory exists."
-      cd build
-    else
-      echo "build_directory $build_directory does not exist."
-      mkdir -p build && cd build
-    fi
+function build_BoringSSL {
+  ABI=$1
+  BUILD_ARCHS=$1
+  MINIMUM_API_LEVEL=$2
 
-    # 检查文件夹是否存在
-    if [ -d "$build_directory" ]; then
-      echo "Directory $build_directory exists."
-    else
-      echo "Directory $build_directory does not exist."
-    fi
-    arch=armeabi-v7a
-    mkdir ${arch} && cd ${arch}
-    cmake -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
-          -DCMAKE_BUILD_TYPE=Debug \
-          -DANDROID_ABI=armeabi-v7a \
-          -DANDROID_NDK=$ANDROID_NDK_HOME \
-          -DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a \
-          -DCMAKE_ANDROID_NDK=$ANDROID_NDK_HOME \
-          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-          -DCMAKE_SYSTEM_NAME=Android \
-          -DANDROID_NATIVE_API_LEVEL=$BORINGSSL_ANDROID_API \
-          -DCMAKE_INSTALL_PREFIX=$PREFIX/armeabi-v7a \
-          -GNinja ../..
-    ninja
-    echo "Building boringssl armeabi-v7a"
-    merge_crypto_ssl_lib
-    cd ../../
-fi
+  echo "Building OpenSSL for ${ABI}"
 
+  echo "Building boringssl in $(realpath $PWD)"
 
-echo "Building boringssl in $(realpath $PWD)"
-if [[ "$BUILD_ARCHS" = *"arm_64"* ]]; then
-    build_directory="$PWD/build"
-    if [ -d "build_directory" ]; then
-      echo "build_directory $build_directory exists."
-      cd build
-    else
-      echo "build_directory $build_directory does not exist."
-      mkdir -p build && cd build
-    fi
+  build_directory="$PWD/build"
+  if [ -d "build_directory" ]; then
+    echo "build_directory $build_directory exists."
+    cd build
+  else
+    echo "build_directory $build_directory does not exist."
+    mkdir -p build && cd build
+  fi
 
-    # 检查文件夹是否存在
-    if [ -d "$build_directory" ]; then
-      echo "Directory $build_directory exists."
-    else
-      echo "Directory $build_directory does not exist."
-    fi
-    arch=arm64-v8a
-    mkdir ${arch} && cd ${arch}
-    cmake -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
-          -DCMAKE_BUILD_TYPE=Debug \
-          -DANDROID_ABI=arm64-v8a \
-          -DANDROID_NDK=$ANDROID_NDK_HOME \
-          -DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a \
-          -DCMAKE_ANDROID_NDK=$ANDROID_NDK_HOME \
-          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-          -DCMAKE_SYSTEM_NAME=Android \
-          -DANDROID_NATIVE_API_LEVEL=$BORINGSSL_ANDROID_API \
-          -DCMAKE_INSTALL_PREFIX=$PREFIX/arm64-v8a \
-          -GNinja ../..
-    ninja
-    echo "Building boringssl arm64-v8a"
-    merge_crypto_ssl_lib
-    cd ../../
-fi
+  # 检查文件夹是否存在
+  if [ -d "$build_directory" ]; then
+    echo "Directory $build_directory exists."
+  else
+    echo "Directory $build_directory does not exist."
+  fi
+  mkdir ${BUILD_ARCHS} && cd ${BUILD_ARCHS}
+  cmake -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
+        -DCMAKE_BUILD_TYPE=Debug \
+        -DANDROID_ABI=$1 \
+        -DANDROID_NDK=$ANDROID_NDK_HOME \
+        -DCMAKE_ANDROID_ARCH_ABI=$1 \
+        -DCMAKE_ANDROID_NDK=$ANDROID_NDK_HOME \
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+        -DCMAKE_SYSTEM_NAME=Android \
+        -DANDROID_NATIVE_API_LEVEL=$BORINGSSL_ANDROID_API \
+        -DCMAKE_INSTALL_PREFIX=$PREFIX/$1 \
+        -GNinja ../..
+  ninja
+  cd ../../
+
+  mkdir -p $PREFIX/$BUILD_ARCHS/lib/
+  mkdir -p $PREFIX/$BUILD_ARCHS/include/
+  cp -p $BASE/boringssl/build/$BUILD_ARCHS/crypto/libcrypto.a $PREFIX/$BUILD_ARCHS/lib/
+  cp -p $BASE/boringssl/build/$BUILD_ARCHS/decrepit/libdecrepit.a $PREFIX/$BUILD_ARCHS/lib/
+  cp -p $BASE/boringssl/build/$BUILD_ARCHS/ssl/libssl.a $PREFIX/$BUILD_ARCHS/lib/
+  cp -r $BASE/boringssl/include/ $PREFIX/$BUILD_ARCHS/include/
+}
+
+build_BoringSSL armeabi-v7a BORINGSSL_ANDROID_API
+build_BoringSSL arm64-v8a BORINGSSL_ANDROID_API
+build_BoringSSL x86 BORINGSSL_ANDROID_API
+build_BoringSSL x86_64 BORINGSSL_ANDROID_API

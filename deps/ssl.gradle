@@ -1,0 +1,29 @@
+afterEvaluate {
+    // Define a Task that will add a protobuf dependency, downloading
+    // the source from GitHub if needed.
+    println "projectDir:" + projectDir
+    println "rootDir:" + rootDir
+    println "buildDir:" + buildDir
+    String ANDROID_NDK_HOME = android.ndkDirectory.absolutePath
+    if (ANDROID_NDK_HOME.isEmpty()) {
+        throw new GradleException("Incorrect ANDROID_NDK_HOME ENV Path!")
+    }
+    System.err.println("ANDROID_NDK_HOME:" + ANDROID_NDK_HOME)
+    task opensslBuild {
+        exec {
+            executable "${rootDir}/third_party/build-openssl.sh"
+            args "${ANDROID_NDK_HOME}"
+            workingDir "${rootDir}/third_party"
+        }
+    }
+
+    task boringsslBuild {
+        exec {
+            executable "${rootDir}/third_party/build-boringssl.sh"
+            args "${ANDROID_NDK_HOME}"
+            workingDir "${rootDir}/third_party"
+        }
+    }
+    preBuild.dependsOn opensslBuild
+    preBuild.dependsOn boringsslBuild
+}

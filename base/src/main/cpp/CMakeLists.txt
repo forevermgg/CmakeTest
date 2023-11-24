@@ -11,6 +11,15 @@ cmake_minimum_required(VERSION 3.22.1)
 # build script scope).
 project("base")
 
+set(OPENSSL_ROOT_DIR ../../../../third_party/prefix/openssl)
+
+include_directories(${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/include)
+add_library(crypto SHARED IMPORTED)
+set_target_properties(crypto PROPERTIES IMPORTED_LOCATION ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/lib/libcrypto.so)
+
+add_library(ssl SHARED IMPORTED)
+set_target_properties(ssl PROPERTIES IMPORTED_LOCATION ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/lib/libssl.so)
+
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
@@ -34,4 +43,6 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
 target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
         android
-        log)
+        log
+        crypto
+        ssl)
