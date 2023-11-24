@@ -50,10 +50,6 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
 
         json/same.h
         json/same.cpp
-        json/index.h
-        json/type_traits.h
-        json/value_as.h
-        json/value_as.cc
         base.cpp)
 
 # Specifies libraries CMake should link to your target library. You
