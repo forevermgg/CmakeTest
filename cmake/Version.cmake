@@ -8,7 +8,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
     if(GIT)
         execute_process(
                 COMMAND ${GIT} describe --tags
-                WORKING_DIRECTORY ../cpp
+                WORKING_DIRECTORY ../app/src/main/cpp
                 OUTPUT_VARIABLE GIT_DESCRIBE_DIRTY
                 OUTPUT_STRIP_TRAILING_WHITESPACE
                 RESULT_VARIABLE GIT_DESCRIBE_RESULT

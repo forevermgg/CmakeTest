@@ -6,26 +6,22 @@
 cmake_minimum_required(VERSION 3.19)
 
 # Declares and names the project.
-project("buglyversion")
-
-# set(CMAKE_AUTOUIC ON)
-# set(CMAKE_AUTOMOC ON)
-# set(CMAKE_AUTORCC ON)
+project("app")
 
 include(../cmake/Common.cmake)
 
 set(EXTERNAL_CMAKE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/../cmake/external;${EXTERNAL_CMAKE_SOURCE_DIR}")
 message("EXTERNAL_CMAKE_SOURCE_DIR:${EXTERNAL_CMAKE_SOURCE_DIR}")
 
-include(../cmake/GetGitVersion.cmake)
+include(../../../../cmake/GetGitVersion.cmake)
 include(../cmake/EnableWarnings.cmake)
-include(../cmake/Version.cmake)
-include(../cmake/Test.cmake)
+include(../../../../cmake/Version.cmake)
+include(../../../../cmake/Test.cmake)
 # include(../cmake/external/googletest.cmake)
-include(../cmake/external/spdlog.cmake)
-include(../cmake/external/nlohmann_json.cmake)
-include(../cmake/FindLibUV.cmake)
-include(../cmake/FindOpenSSL.cmake)
+# include(../cmake/external/spdlog.cmake)
+# include(../cmake/external/nlohmann_json.cmake)
+# include(../cmake/FindLibUV.cmake)
+# include(../cmake/FindOpenSSL.cmake)
 
 message("APP_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
@@ -106,7 +102,7 @@ ADD_CUSTOM_COMMAND(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/version.h
         ${CMAKE_CURRENT_BINARY_DIR}/_version.h
         COMMAND ${CMAKE_COMMAND} -P
-        ../cmake/Version.cmake)
+        ../../../../cmake/Version.cmake)
 
 
 macro(get_git_hash GIT_COMMIT_ID)   # 宏的开始
@@ -134,7 +130,7 @@ configure_file(
 # Gradle automatically packages shared libraries with your APK.
 
 add_library( # Sets the name of the library.
-        buglyversion
+        app
 
         # Sets the library as a shared library.
         SHARED
@@ -161,10 +157,10 @@ find_library( # Sets the name of the path variable.
 # build script, prebuilt third-party libraries, or system libraries.
 
 target_link_libraries( # Specifies the target library.
-        buglyversion
-        spdlog::spdlog
+        app
+        # spdlog::spdlog
         # LibUV::LibUV
-        nlohmann_json::nlohmann_json
+        # nlohmann_json::nlohmann_json
         # Links the target library to the log library
         # included in the NDK.
         ${log-lib})
