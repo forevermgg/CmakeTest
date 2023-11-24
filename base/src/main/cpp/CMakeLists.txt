@@ -1,14 +1,5 @@
-# For more information about using CMake with Android Studio, read the
-# documentation: https://d.android.com/studio/projects/add-native-code.html.
-# For more examples on how to use CMake, see https://github.com/android/ndk-samples.
-
-# Sets the minimum CMake version required for this project.
 cmake_minimum_required(VERSION 3.22.1)
 
-# Declares the project name. The project name can be accessed via ${ PROJECT_NAME},
-# Since this is the top level CMakeLists.txt, the project name is also accessible
-# with ${CMAKE_PROJECT_NAME} (both CMake variables are in-sync within the top level
-# build script scope).
 project("base")
 
 set(OPENSSL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/prefix/openssl)
@@ -41,20 +32,59 @@ include_directories(${JSON_ROOT_DIR}/json/single_include)
 set(ABSEIL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/abseil-cpp)
 message("ABSEIL_ROOT_DIR: ${ABSEIL_ROOT_DIR}")
 add_subdirectory(${ABSEIL_ROOT_DIR}  ${ABSEIL_ROOT_DIR}/build)
-#include_directories(${ABSEIL_ROOT_DIR}/json/single_include)
+
+
+include_directories(json/*.h)
+include_directories(string/*.h)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
         jni/string/jni_string.h
         jni/string/jni_string.cpp
 
+        json/JSON.h
+        json/JSON.cpp
+        json/JSONGenerator.h
         json/same.h
         json/same.cpp
-        base.cpp)
 
-# Specifies libraries CMake should link to your target library. You
-# can link libraries from various origins, such as libraries defined in this
-# build script, prebuilt third-party libraries, or Android system libraries.
+        string/ref_counted_string.h
+        string/ref_counted_string.cc
+        string/StdStringExtractor.h
+        string/StdStringExtractor.cpp
+        string/string_convert.h
+        string/string_convert.cpp
+
+        synchronization/atomic_object.h
+        synchronization/count_down_latch.h
+        synchronization/count_down_latch.cc
+        synchronization/semaphore.h
+        synchronization/semaphore.cc
+        synchronization/shared_mutex.h
+        synchronization/shared_mutex_std.h
+        synchronization/shared_mutex_std.cc
+        synchronization/sync_switch.h
+        synchronization/sync_switch.cc
+        synchronization/waitable_event.h
+        synchronization/waitable_event.cc
+
+        time/chrono_timestamp_provider.h
+        time/chrono_timestamp_provider.cc
+        time/time_delta.h
+        time/time_point.h
+        time/time_point.cc
+        time/timestamp_provider.h
+        base.cpp
+        eintr_wrapper.h
+        logging.h
+        log_settings.cc
+        log_settings.h
+        log_settings_state.cc
+        logging.cc
+        logging.h
+        macros.h
+        )
+
 target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
         android
