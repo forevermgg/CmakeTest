@@ -27,3 +27,12 @@ afterEvaluate {
     preBuild.dependsOn opensslBuild
     preBuild.dependsOn boringsslBuild
 }
+
+// https://blog.csdn.net/wei7017406/article/details/72084727
+def isWindows() {
+    return org.gradle.internal.os.OperatingSystem.current().isWindows()
+}
+
+def isWindows2() {
+    return System.properties['os.name'].contains('windows')
+}

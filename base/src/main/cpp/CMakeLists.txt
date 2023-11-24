@@ -11,15 +11,32 @@ cmake_minimum_required(VERSION 3.22.1)
 # build script scope).
 project("base")
 
-set(OPENSSL_ROOT_DIR ../../../../third_party/prefix/openssl)
-
+set(OPENSSL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/prefix/openssl)
+message("OPENSSL_ROOT_DIR: ${OPENSSL_ROOT_DIR}")
 include_directories(${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/include)
-add_library(crypto SHARED IMPORTED)
-set_target_properties(crypto PROPERTIES IMPORTED_LOCATION ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/lib/libcrypto.so)
+message("OPENSSL_INCLUDE_DIR: ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/include")
+# 添加两个预编译库
+add_library(openssl-crypto
+        STATIC
+        IMPORTED)
 
-add_library(ssl SHARED IMPORTED)
-set_target_properties(ssl PROPERTIES IMPORTED_LOCATION ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/lib/libssl.so)
+set_target_properties(openssl-crypto
+        PROPERTIES IMPORTED_LOCATION
+        ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/lib/libcrypto.a)
 
+add_library(openssl-ssl
+        STATIC
+        IMPORTED)
+
+set_target_properties(openssl-ssl
+        PROPERTIES IMPORTED_LOCATION
+        ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/lib/libssl.a)
+
+
+set(JSON_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/json/json)
+message("JSON_ROOT_DIR: ${JSON_ROOT_DIR}")
+add_subdirectory(${JSON_ROOT_DIR}  ${JSON_ROOT_DIR}/build)
+include_directories(${JSON_ROOT_DIR}/json/single_include)
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
@@ -44,5 +61,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
         android
         log
-        crypto
-        ssl)
+        openssl-ssl openssl-crypto
+        nlohmann_json::nlohmann_json
+        )
