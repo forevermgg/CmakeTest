@@ -14,6 +14,6 @@
 .cxx
 local.properties
 .idea/*
-/prefix/
-/openssl/
-/boringssl/
+/third_party/prefix/
+/third_party/openssl/
+/third_party/boringssl/
