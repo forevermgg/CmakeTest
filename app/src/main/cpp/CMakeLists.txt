@@ -25,6 +25,7 @@ include(../cmake/Test.cmake)
 include(../cmake/external/spdlog.cmake)
 include(../cmake/external/nlohmann_json.cmake)
 include(../cmake/FindLibUV.cmake)
+include(../cmake/FindOpenSSL.cmake)
 
 message("APP_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
@@ -162,6 +163,7 @@ find_library( # Sets the name of the path variable.
 target_link_libraries( # Specifies the target library.
         buglyversion
         spdlog::spdlog
+        # LibUV::LibUV
         nlohmann_json::nlohmann_json
         # Links the target library to the log library
         # included in the NDK.
