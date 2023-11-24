@@ -37,21 +37,23 @@ set(JSON_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/json/json)
 message("JSON_ROOT_DIR: ${JSON_ROOT_DIR}")
 add_subdirectory(${JSON_ROOT_DIR}  ${JSON_ROOT_DIR}/build)
 include_directories(${JSON_ROOT_DIR}/json/single_include)
-# Creates and names a library, sets it as either STATIC
-# or SHARED, and provides the relative paths to its source code.
-# You can define multiple libraries, and CMake builds them for you.
-# Gradle automatically packages shared libraries with your APK.
-#
-# In this top level CMakeLists.txt, ${CMAKE_PROJECT_NAME} is used to define
-# the target library name; in the sub-module's CMakeLists.txt, ${PROJECT_NAME}
-# is preferred for the same purpose.
-#
-# In order to load a library into your app from Java/Kotlin, you must call
-# System.loadLibrary() and pass the name of the library defined here;
-# for GameActivity/NativeActivity derived applications, the same library name must be
-# used in the AndroidManifest.xml file.
+
+set(ABSEIL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/abseil-cpp)
+message("ABSEIL_ROOT_DIR: ${ABSEIL_ROOT_DIR}")
+add_subdirectory(${ABSEIL_ROOT_DIR}  ${ABSEIL_ROOT_DIR}/build)
+#include_directories(${ABSEIL_ROOT_DIR}/json/single_include)
+
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
+        jni/string/jni_string.h
+        jni/string/jni_string.cpp
+
+        json/same.h
+        json/same.cpp
+        json/index.h
+        json/type_traits.h
+        json/value_as.h
+        json/value_as.cc
         base.cpp)
 
 # Specifies libraries CMake should link to your target library. You
@@ -63,4 +65,23 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         log
         openssl-ssl openssl-crypto
         nlohmann_json::nlohmann_json
+        absl::base
+        absl::algorithm
+        absl::cleanup
+        # absl::container
+        # absl::crc
+        absl::debugging
+        absl::flags
+        absl::hash
+        absl::log
+        absl::memory
+        absl::numeric
+        # absl::profiling
+        # absl::random
+        absl::status
+        absl::strings
+        absl::synchronization
+        absl::time
+        # absl::types
+        absl::utility
         )
