@@ -4,6 +4,7 @@
 #include <jni.h>
 
 #include <vector>
+#include <optional>
 
 #include "../macros.h"
 #include "scoped_java_ref.h"
@@ -18,6 +19,8 @@ void InitJavaVM(JavaVM* vm);
 JNIEnv* AttachCurrentThread();
 
 void DetachFromVM();
+
+std::optional<JNIEnv*> GetJavaEnv();
 
 std::string JavaStringToString(JNIEnv* env, jstring string);
 

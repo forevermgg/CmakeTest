@@ -7,6 +7,7 @@
 #include "../logging.h"
 #include "../string_conversion.h"
 #include "../thread_local.h"
+#include "../util/looper.h"
 
 namespace base {
 namespace jni {
@@ -61,6 +62,38 @@ void DetachFromVM() {
   if (g_jvm) {
     g_jvm->DetachCurrentThread();
   }
+}
+
+std::optional<JNIEnv*> GetJavaEnv() {
+  JNIEnv* env = nullptr;
+  jint env_res =
+       g_jvm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6);
+  if (env_res == JNI_EDETACHED) {
+    BASE_LOG(INFO) << "Attaching to new thread for JNI";
+    auto res =
+         g_jvm->AttachCurrentThread(reinterpret_cast<JNIEnv**>(env), nullptr);
+    if (JNI_OK != res) {
+      BASE_LOG(ERROR) << "Failed to AttachCurrentThread: ErrorCode " << res;
+      return std::nullopt;
+    }
+    // Now that we've attached, we need to add a cleanup handler to the current
+    // looper to detach when it's destroyed.
+    auto* looper = utils::LooperThread::GetCurrentLooper();
+    if (looper != nullptr) {
+      JavaVM* jvm = g_jvm;
+      looper->AddCleanupHandler([jvm] { jvm->DetachCurrentThread(); });
+    } else {
+      BASE_LOG(ERROR) << "JNI was attached from outside of a Looper.";
+    }
+  } else if (env_res == JNI_EVERSION) {
+    BASE_LOG(ERROR) << "GetEnv: version not supported";
+    return std::nullopt;
+  } else if (env_res != JNI_OK) {
+    BASE_LOG(ERROR) << "GetEnv: failed with unknown error " << env_res;
+    return std::nullopt;
+  }
+  // we do nothing if it is JNI_OK.
+  return env;
 }
 
 std::string JavaStringToString(JNIEnv* env, jstring str) {

@@ -120,6 +120,8 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         util/event_loop.hpp
         util/event_loop.cpp
         util/event_loop_dispatcher.hpp
+        util/looper.h
+        util/looper.cc
         util/optional.hpp
         util/scheduler.cpp
         util/scheduler.hpp
