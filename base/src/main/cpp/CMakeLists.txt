@@ -54,6 +54,13 @@ add_subdirectory(${LIBUV_ROOT_DIR}  ${LIBUV_ROOT_DIR}/build)
 include_directories(json/*.h)
 include_directories(string/*.h)
 
+
+set(FLATBUFFERS_SRC_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/flatbuffers/include)
+message("FLATBUFFERS_SRC_INCLUDE ${FLATBUFFERS_SRC_INCLUDE}")
+add_subdirectory(flatbuffers)
+include_directories(${FLATBUFFERS_SRC_INCLUDE})
+FILE(GLOB Generated_SRCS generated/*.h)
+
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
         jni/string/jni_string.h
@@ -131,6 +138,13 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         util/type_traits.hpp
         util/version_id.hpp
 
+        variant/jni_variant_util.cc
+        variant/jni_variant_util.h
+        variant/variant.h
+        variant/variant.cc
+        variant/variant_util.h
+        variant/variant_util.cc
+
         base.cpp
         base32.cc
         base32.h
@@ -180,4 +194,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         # absl::types
         absl::utility
         libuv
+        flatbuffers
         )

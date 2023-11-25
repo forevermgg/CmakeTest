@@ -3,8 +3,9 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
-apply from:"deps.gradle"
-apply from:"ssl.gradle"
+apply from: "deps.gradle"
+apply from: "ssl.gradle"
+apply from: "flatbuffers.gradle"
 
 android {
     namespace 'com.mgg.deps'
