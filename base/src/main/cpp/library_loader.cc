@@ -5,6 +5,8 @@
 #include "util/event_loop.hpp"
 #include "util/scope_exit.hpp"
 #include "util/uv/scheduler.hpp"
+#include "jni/java_class_global_def.hpp"
+#include "jni/jni_utils.hpp"
 
 // This is called by the VM when the shared library is first loaded.
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
@@ -37,5 +39,22 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     BASE_LOG(ERROR) << "called = " << called;
   }
   BASE_LOG(ERROR) << "called = " << called;
+
+  if (vm->GetEnv((void**)&env, JNI_VERSION_1_6) != JNI_OK) {
+    return JNI_ERR;
+  } else {
+    FOREVER::JNI_UTIL::JniUtils::initialize(vm, JNI_VERSION_1_6);
+    FOREVER::_impl::JavaClassGlobalDef::initialize(env);
+  }
   return JNI_VERSION_1_4;
+}
+
+extern "C" JNIEXPORT void JNI_OnUnload(JavaVM* vm, void*) {
+  JNIEnv* env;
+  if (vm->GetEnv((void**)&env, JNI_VERSION_1_6) != JNI_OK) {
+    return;
+  } else {
+    FOREVER::_impl::JavaClassGlobalDef::release();
+    FOREVER::JNI_UTIL::JniUtils::release();
+  }
 }

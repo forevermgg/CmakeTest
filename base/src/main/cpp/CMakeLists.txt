@@ -65,6 +65,22 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         jni/scoped_java_ref.cc
         jni/scoped_java_ref.h
 
+        jni/java_class.hpp
+        jni/java_class.cpp
+        jni/java_class_global_def.hpp
+        jni/java_class_global_def.cpp
+        jni/java_global_ref_by_copy.cpp
+        jni/java_global_ref_by_copy.hpp
+        jni/java_global_ref_by_move.hpp
+        jni/java_global_ref_by_move.cpp
+        jni/java_global_weak_ref.hpp
+        jni/java_global_weak_ref.cpp
+        jni/java_local_ref.hpp
+        jni/java_method.hpp
+        jni/java_method.cpp
+        jni/jni_utils.hpp
+        jni/jni_utils.cpp
+
         json/JSON.h
         json/JSON.cpp
         json/JSONGenerator.h
