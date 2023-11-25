@@ -7,9 +7,9 @@ android {
     compileSdk 34
     ndkVersion "25.1.8937393"
     defaultConfig {
-        namespace = "com.test.buglyversion"
-        applicationId "com.test.buglyversion"
-        minSdk 21
+        namespace = "com.mgg.test"
+        applicationId "com.mgg.test"
+        minSdk 24
         targetSdk 34
         versionCode 1
         versionName "1.0"

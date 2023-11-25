@@ -9,6 +9,8 @@ afterEvaluate {
         throw new GradleException("Incorrect ANDROID_NDK_HOME ENV Path!")
     }
     System.err.println("ANDROID_NDK_HOME:" + ANDROID_NDK_HOME)
+
+    System.err.println("ANDROID_SDK_HOME:" + android.sdkDirectory.absolutePath)
     task opensslBuild {
         exec {
             executable "${rootDir}/third_party/build-openssl.sh"

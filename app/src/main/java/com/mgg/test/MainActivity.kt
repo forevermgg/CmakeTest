@@ -1,9 +1,9 @@
-package com.test.buglyversion
+package com.mgg.test
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
-import com.test.buglyversion.databinding.ActivityMainBinding
+import com.mgg.base.NativeLib
+import com.mgg.test.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,6 +17,8 @@ class MainActivity : AppCompatActivity() {
 
         // Example of a call to a native method
         binding.sampleText.text = stringFromJNI()
+
+        NativeLib().stringFromJNI()
     }
 
     /**

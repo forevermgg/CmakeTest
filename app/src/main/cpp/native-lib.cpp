@@ -21,7 +21,7 @@ int getValueType(T v) {
 }
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_test_buglyversion_MainActivity_stringFromJNI(JNIEnv* env,
+Java_com_mgg_test_MainActivity_stringFromJNI(JNIEnv* env,
                                                       jobject /* this */) {
   std::string hello = std::string(QCI_BUILD_ID) + std::string(".") +
                       std::string(QCI_JOB_ID) + std::string(".") +

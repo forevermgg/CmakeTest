@@ -23,6 +23,19 @@ set_target_properties(openssl-ssl
         PROPERTIES IMPORTED_LOCATION
         ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/lib/libssl.a)
 
+set(LIBUV_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/prefix/libuv)
+message("LIBUV_ROOT_DIR: ${LIBUV_ROOT_DIR}")
+include_directories(${LIBUV_ROOT_DIR}/${ANDROID_ABI}/include)
+message("LIBUV_INCLUDE_DIR: ${LIBUV_ROOT_DIR}/${ANDROID_ABI}/include")
+
+add_library(libuv
+        STATIC
+        IMPORTED)
+
+set_target_properties(libuv
+        PROPERTIES IMPORTED_LOCATION
+        ${LIBUV_ROOT_DIR}/${ANDROID_ABI}/lib/libuv.a)
+
 
 set(JSON_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/json/json)
 message("JSON_ROOT_DIR: ${JSON_ROOT_DIR}")
@@ -33,6 +46,10 @@ set(ABSEIL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/abseil-c
 message("ABSEIL_ROOT_DIR: ${ABSEIL_ROOT_DIR}")
 add_subdirectory(${ABSEIL_ROOT_DIR}  ${ABSEIL_ROOT_DIR}/build)
 
+
+set(LIBUV_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/libuv)
+message("LIBUV_ROOT_DIR: ${LIBUV_ROOT_DIR}")
+add_subdirectory(${LIBUV_ROOT_DIR}  ${LIBUV_ROOT_DIR}/build)
 
 include_directories(json/*.h)
 include_directories(string/*.h)
@@ -81,7 +98,26 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         time/time_point.cc
         time/timestamp_provider.h
 
+        util/android/scheduler.hpp
+        util/generic/scheduler.hpp
+        util/uv/scheduler.hpp
+        util/event_loop.hpp
+        util/event_loop.cpp
+        util/event_loop_dispatcher.hpp
+        util/optional.hpp
+        util/scheduler.cpp
+        util/scheduler.hpp
+        util/scope_exit.hpp
+        util/functional.hpp
+        util/function_ref.hpp
+        util/type_traits.hpp
+        util/version_id.hpp
+
         base.cpp
+        base32.cc
+        base32.h
+        base64.cc
+        base64.h
         eintr_wrapper.h
 
         library_loader.cc
@@ -125,4 +161,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         absl::time
         # absl::types
         absl::utility
+        libuv
         )

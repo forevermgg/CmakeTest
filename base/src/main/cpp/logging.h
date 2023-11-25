@@ -102,6 +102,12 @@ bool ShouldCreateLogMessage(LogSeverity severity);
 #define BASE_DCHECK(condition) BASE_EAT_STREAM_PARAMETERS(condition)
 #endif
 
+#if NDEBUG
+#define BASE_ASSERT(condition) BASE_CHECK(condition)
+#else
+#define BASE_ASSERT(condition) static_cast<void>(sizeof bool(condition))
+#endif
+
 #define BASE_UNREACHABLE()                          \
   {                                                \
     BASE_LOG(ERROR) << "Reached unreachable code."; \
