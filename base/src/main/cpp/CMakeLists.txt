@@ -41,6 +41,12 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
         jni/string/jni_string.h
         jni/string/jni_string.cpp
+        jni/jni_util.cc
+        jni/jni_util.h
+        jni/jni_weak_ref.cc
+        jni/jni_weak_ref.h
+        jni/scoped_java_ref.cc
+        jni/scoped_java_ref.h
 
         json/JSON.h
         json/JSON.cpp
@@ -74,15 +80,24 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         time/time_point.h
         time/time_point.cc
         time/timestamp_provider.h
+
         base.cpp
         eintr_wrapper.h
-        logging.h
+
+        library_loader.cc
+
+        log_level.h
         log_settings.cc
         log_settings.h
         log_settings_state.cc
         logging.cc
         logging.h
         macros.h
+
+        string_conversion.cc
+        string_conversion.h
+        thread_local.cc
+        thread_local.h
         )
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
