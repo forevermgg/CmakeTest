@@ -7,6 +7,7 @@
 #include "util/uv/scheduler.hpp"
 #include "jni/java_class_global_def.hpp"
 #include "jni/jni_utils.hpp"
+#include "common/VirtualMachineEnv.h"
 
 // This is called by the VM when the shared library is first loaded.
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
@@ -46,7 +47,8 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     FOREVER::JNI_UTIL::JniUtils::initialize(vm, JNI_VERSION_1_6);
     FOREVER::_impl::JavaClassGlobalDef::initialize(env);
   }
-  return JNI_VERSION_1_4;
+  VirtualMachineEnv::JNI_OnLoad(vm);
+  return JNI_VERSION_1_6;
 }
 
 extern "C" JNIEXPORT void JNI_OnUnload(JavaVM* vm, void*) {

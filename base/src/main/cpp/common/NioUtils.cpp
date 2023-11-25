@@ -5,7 +5,7 @@
 AutoBuffer::AutoBuffer(JNIEnv *env, jobject buffer, jint size,
                        bool commit) noexcept
     : mEnv(env), mDoCommit(commit) {
-  mNioUtils.jniClass = env->FindClass("com/mgg/callbackhandler/NioUtils");
+  mNioUtils.jniClass = env->FindClass("com/mgg/base/NioUtils");
   mNioUtils.jniClass = (jclass)env->NewGlobalRef(mNioUtils.jniClass);
 
   mNioUtils.getBasePointer = env->GetStaticMethodID(

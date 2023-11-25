@@ -63,6 +63,19 @@ FILE(GLOB Generated_SRCS generated/*.h)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
+        common/CallbackHandler.h
+        common/CallbackHandler.cpp
+        common/CallbackUtils.h
+        common/CallbackUtils.cpp
+        common/compiler.h
+        common/debug.cpp
+        common/debug.h
+        common/macros.h
+        common/NioUtils.h
+        common/NioUtils.cpp
+        common/VirtualMachineEnv.h
+        common/VirtualMachineEnv.cpp
+
         jni/string/jni_string.h
         jni/string/jni_string.cpp
         jni/jni_util.cc
