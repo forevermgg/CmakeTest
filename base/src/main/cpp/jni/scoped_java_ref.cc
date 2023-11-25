@@ -20,9 +20,7 @@ ScopedJavaLocalFrame::ScopedJavaLocalFrame(JNIEnv* env, int capacity)
   BASE_DCHECK(!failed);
 }
 
-ScopedJavaLocalFrame::~ScopedJavaLocalFrame() {
-  env_->PopLocalFrame(NULL);
-}
+ScopedJavaLocalFrame::~ScopedJavaLocalFrame() { env_->PopLocalFrame(NULL); }
 
 JavaRef<jobject>::JavaRef() : obj_(NULL) {}
 

@@ -141,8 +141,7 @@ std::vector<std::string> StringListToVector(JNIEnv* env, jobject list) {
 }
 
 ScopedJavaLocalRef<jobjectArray> VectorToStringArray(
-    JNIEnv* env,
-    const std::vector<std::string>& vector) {
+    JNIEnv* env, const std::vector<std::string>& vector) {
   BASE_DCHECK(env);
   ScopedJavaLocalRef<jclass> string_clazz(env,
                                           env->FindClass("java/lang/String"));
@@ -158,8 +157,7 @@ ScopedJavaLocalRef<jobjectArray> VectorToStringArray(
 }
 
 ScopedJavaLocalRef<jobjectArray> VectorToBufferArray(
-    JNIEnv* env,
-    const std::vector<std::vector<uint8_t>>& vector) {
+    JNIEnv* env, const std::vector<std::vector<uint8_t>>& vector) {
   BASE_DCHECK(env);
   ScopedJavaLocalRef<jclass> byte_buffer_clazz(
       env, env->FindClass("java/nio/ByteBuffer"));
@@ -177,9 +175,7 @@ ScopedJavaLocalRef<jobjectArray> VectorToBufferArray(
   return ScopedJavaLocalRef<jobjectArray>(env, java_array);
 }
 
-bool HasException(JNIEnv* env) {
-  return env->ExceptionCheck() != JNI_FALSE;
-}
+bool HasException(JNIEnv* env) { return env->ExceptionCheck() != JNI_FALSE; }
 
 bool ClearException(JNIEnv* env, bool silent) {
   if (!HasException(env)) {
@@ -244,6 +240,47 @@ std::string GetJavaExceptionInfo(JNIEnv* env, jthrowable java_throwable) {
   }
 
   return JavaStringToString(env, exception_string.obj());
+}
+
+bool CheckAndClearException(JNIEnv* env) {
+  if (env->ExceptionCheck()) {
+    env->ExceptionDescribe();
+    env->ExceptionClear();
+    return true;
+  }
+  return false;
+}
+
+// Converts a `java.util.List<String>` to a `std::vector<std::string>`.
+std::vector<std::string> JavaStringListToStdStringVector(JNIEnv* env,
+                                                         jobject list) {
+  jclass cls = env->FindClass("java/util/List");
+  int size = env->CallIntMethod(list, env->GetMethodID(cls, "size", "()I"));
+  env->DeleteLocalRef(cls);
+  if (CheckAndClearException(env)) size = 0;
+  std::vector<std::string> vector(size);
+  for (int i = 0; i < size; i++) {
+    cls = env->FindClass("java/util/List");
+    jobject element = env->CallObjectMethod(
+        list, env->GetMethodID(cls, "get", "(I)Ljava/lang/Object;"), i);
+    bool failed = CheckAndClearException(env);
+    env->DeleteLocalRef(cls);
+    if (failed) break;
+    vector[i] = JavaStringToStdString(env, element);
+    env->DeleteLocalRef(element);
+  }
+  return vector;
+}
+
+// Convert a `jstring` to a `std::string`.
+std::string JavaStringToStdString(JNIEnv* env, jobject string_object) {
+  if (string_object == nullptr) return "";
+  const char* string_buffer =
+      env->GetStringUTFChars(static_cast<jstring>(string_object), nullptr);
+  std::string return_string(string_buffer);
+  env->ReleaseStringUTFChars(static_cast<jstring>(string_object),
+                             string_buffer);
+  return return_string;
 }
 
 }  // namespace jni

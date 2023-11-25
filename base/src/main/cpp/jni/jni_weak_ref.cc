@@ -19,9 +19,7 @@ JavaObjectWeakGlobalRef::JavaObjectWeakGlobalRef(JNIEnv* env, jobject obj)
   BASE_DCHECK(obj_);
 }
 
-JavaObjectWeakGlobalRef::~JavaObjectWeakGlobalRef() {
-  reset();
-}
+JavaObjectWeakGlobalRef::~JavaObjectWeakGlobalRef() { reset(); }
 
 void JavaObjectWeakGlobalRef::operator=(const JavaObjectWeakGlobalRef& rhs) {
   Assign(rhs);
