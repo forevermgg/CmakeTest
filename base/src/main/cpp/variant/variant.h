@@ -12,7 +12,7 @@
 /// @brief Namespace that encompasses all forever APIs.
 
 namespace FOREVER {
-namespace internal {
+namespace INTERNAL {
 class VariantInternal;
 }
 }  // namespace FOREVER
@@ -1109,7 +1109,7 @@ class Variant {
 
   static constexpr size_t kMaxSmallStringSize = sizeof(Value::small_string);
 
-  friend class FOREVER::internal::VariantInternal;
+  friend class FOREVER::INTERNAL::VariantInternal;
 };
 
 template <>

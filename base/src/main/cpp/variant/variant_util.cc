@@ -13,7 +13,7 @@
 #define FLEXBUFFER_BUILDER_STARTING_SIZE 512
 
 namespace FOREVER {
-namespace util {
+namespace UTIL {
 
 // Forward declarations for stringstream variations of the *ToJson functions
 // since these aren't made available in the header. These return true on success
@@ -361,6 +361,6 @@ std::vector<uint8_t> VariantVectorToFlexbuffer(
   return fbb.GetBuffer();
 }
 
-}  // namespace util
+}  // namespace UTIL
 // NOLINTNEXTLINE - allow namespace overridden
 }  // namespace FOREVER

@@ -7,7 +7,7 @@
 #include "flatbuffers/flexbuffers.h"
 
 namespace FOREVER {
-namespace util {
+namespace UTIL {
 
 // Convert from a JSON string to a Variant.
 Variant JsonToVariant(const char* json);
@@ -56,7 +56,7 @@ bool VariantMapToFlexbuffer(const std::map<Variant, Variant>& map,
 bool VariantVectorToFlexbuffer(const std::vector<Variant>& vector,
                                flexbuffers::Builder* fbb);
 
-}  // namespace util
+}  // namespace UTIL
 // NOLINTNEXTLINE - allow namespace overridden
 }  // namespace FOREVER
 

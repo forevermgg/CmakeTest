@@ -3,8 +3,8 @@
 
 #include <jni.h>
 
-#include <vector>
 #include <optional>
+#include <vector>
 
 #include "../macros.h"
 #include "scoped_java_ref.h"

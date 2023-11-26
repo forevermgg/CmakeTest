@@ -66,12 +66,11 @@ void DetachFromVM() {
 
 std::optional<JNIEnv*> GetJavaEnv() {
   JNIEnv* env = nullptr;
-  jint env_res =
-       g_jvm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6);
+  jint env_res = g_jvm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6);
   if (env_res == JNI_EDETACHED) {
     BASE_LOG(INFO) << "Attaching to new thread for JNI";
     auto res =
-         g_jvm->AttachCurrentThread(reinterpret_cast<JNIEnv**>(env), nullptr);
+        g_jvm->AttachCurrentThread(reinterpret_cast<JNIEnv**>(env), nullptr);
     if (JNI_OK != res) {
       BASE_LOG(ERROR) << "Failed to AttachCurrentThread: ErrorCode " << res;
       return std::nullopt;

@@ -78,6 +78,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
 
         jni/string/jni_string.h
         jni/string/jni_string.cpp
+        jni/embedded_file.h
         jni/jni_util.cc
         jni/jni_util.h
         jni/jni_weak_ref.cc
@@ -100,6 +101,10 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         jni/java_method.cpp
         jni/jni_utils.hpp
         jni/jni_utils.cpp
+        jni/util_android.h
+        jni/util_android.cc
+        jni/jobject_reference.h
+        jni/jobject_reference.cc
 
         json/JSON.h
         json/JSON.cpp
