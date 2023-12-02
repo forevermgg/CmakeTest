@@ -6,6 +6,7 @@ plugins {
 apply from: "deps.gradle"
 apply from: "ssl.gradle"
 apply from: "flatbuffers.gradle"
+// apply from: "protobuf.gradle"
 
 android {
     namespace 'com.mgg.deps'
