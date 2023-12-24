@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22.1)
 
 project("base")
 
-set(OPENSSL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/prefix/openssl)
+#[[set(OPENSSL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/prefix/openssl)
 message("OPENSSL_ROOT_DIR: ${OPENSSL_ROOT_DIR}")
 include_directories(${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/include)
 message("OPENSSL_INCLUDE_DIR: ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/include")
@@ -21,7 +21,7 @@ add_library(openssl-ssl
 
 set_target_properties(openssl-ssl
         PROPERTIES IMPORTED_LOCATION
-        ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/lib/libssl.a)
+        ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/lib/libssl.a)]]
 
 set(LIBUV_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/prefix/libuv)
 message("LIBUV_ROOT_DIR: ${LIBUV_ROOT_DIR}")
@@ -60,6 +60,10 @@ message("FLATBUFFERS_SRC_INCLUDE ${FLATBUFFERS_SRC_INCLUDE}")
 add_subdirectory(flatbuffers)
 include_directories(${FLATBUFFERS_SRC_INCLUDE})
 FILE(GLOB Generated_SRCS generated/*.h)
+
+
+find_package(curl REQUIRED CONFIG)
+find_package(jsoncpp REQUIRED CONFIG)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
@@ -184,13 +188,16 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         string_conversion.h
         thread_local.cc
         thread_local.h
+
+        curl/curl_api.h
+        curl/curl_api.cc
         )
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
         android
         log
-        openssl-ssl openssl-crypto
+        #[[openssl-ssl openssl-crypto]]
         nlohmann_json::nlohmann_json
         absl::base
         absl::algorithm
@@ -213,4 +220,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         absl::utility
         libuv
         flatbuffers
+        curl::curl
+        jsoncpp::jsoncpp
         )
