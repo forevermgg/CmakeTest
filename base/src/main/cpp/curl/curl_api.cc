@@ -1,8 +1,7 @@
 // CurlEasyHandle
 #include "curl_api.h"
 
-CurlEasyHandle::CurlEasyHandle() : easy_handle_(curl_easy_init()) {
-}
+CurlEasyHandle::CurlEasyHandle() : easy_handle_(curl_easy_init()) {}
 
 CurlEasyHandle::~CurlEasyHandle() { curl_easy_cleanup(easy_handle_); }
 
@@ -21,8 +20,7 @@ CURL* CurlEasyHandle::GetEasyHandle() const { return easy_handle_; }
 
 // CurlMultiHandle
 
-CurlMultiHandle::CurlMultiHandle() : multi_handle_(curl_multi_init()) {
-}
+CurlMultiHandle::CurlMultiHandle() : multi_handle_(curl_multi_init()) {}
 
 CurlMultiHandle::~CurlMultiHandle() { curl_multi_cleanup(multi_handle_); }
 
@@ -60,14 +58,14 @@ CurlApi::CurlApi() { curl_global_init(CURL_GLOBAL_ALL); }
 CurlApi::~CurlApi() { curl_global_cleanup(); }
 
 std::unique_ptr<CurlEasyHandle> CurlApi::CreateEasyHandle() const {
-  absl::MutexLock lock(&mutex_);
+  std::lock_guard<std::mutex> guard(mutex_);
   // make_unique cannot access the private constructor, so we use
   // an old-fashioned new.
   return std::unique_ptr<CurlEasyHandle>(new CurlEasyHandle());
 }
 
 std::unique_ptr<CurlMultiHandle> CurlApi::CreateMultiHandle() const {
-  absl::MutexLock lock(&mutex_);
+  std::lock_guard<std::mutex> guard(mutex_);
   // make_unique cannot access the private constructor, so we use
   // an old-fashioned new.
   return std::unique_ptr<CurlMultiHandle>(new CurlMultiHandle());

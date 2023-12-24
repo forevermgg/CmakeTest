@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.22.1)
 
 project("base")
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+
 #[[set(OPENSSL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/prefix/openssl)
 message("OPENSSL_ROOT_DIR: ${OPENSSL_ROOT_DIR}")
 include_directories(${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/include)
@@ -189,12 +194,26 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         thread_local.cc
         thread_local.h
 
-        curl/curl_api.h
+        #[[curl/curl_api.h
         curl/curl_api.cc
+        curl/curl_header_parser.h
+        curl/curl_header_parser.cc
+        curl/curl_http_client.h
+        curl/curl_http_client.cc
+        curl/curl_http_request_handle.h
+        curl/curl_http_request_handle.cc
+        curl/curl_http_response.h
+        curl/curl_http_response.cc
+        curl/http_client.h
+        curl/http_client_util.h
+        curl/http_client_util.cc]]
         )
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
+        flatbuffers
+        curl::curl
+        jsoncpp::jsoncpp
         android
         log
         #[[openssl-ssl openssl-crypto]]
@@ -209,6 +228,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         absl::hash
         absl::log
         absl::memory
+        absl::meta
         absl::numeric
         # absl::profiling
         # absl::random
@@ -219,7 +239,4 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         # absl::types
         absl::utility
         libuv
-        flatbuffers
-        curl::curl
-        jsoncpp::jsoncpp
         )
