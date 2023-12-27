@@ -231,25 +231,36 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         #[[openssl-ssl openssl-crypto]]
         nlohmann_json::nlohmann_json
         absl::base
-        absl::algorithm
-        absl::cleanup
-        # absl::container
-        # absl::crc
-        absl::debugging
+        absl::core_headers
+        absl::absl_check
+        absl::absl_log
+        absl::check
+        absl::die_if_null
         absl::flags
-        absl::hash
+        absl::flags_commandlineflag
+        absl::flags_marshalling
+        absl::flags_parse
+        absl::flags_reflection
+        absl::flags_usage
         absl::log
+        absl::log_flags
+        absl::log_globals
+        absl::log_initialize
+        absl::log_internal_message
+        absl::cord
+        absl::random_random
+        absl::raw_hash_set
+        absl::hash
+        absl::leak_check
         absl::memory
         absl::meta
-        absl::numeric
-        # absl::profiling
-        # absl::random
+        absl::stacktrace
         absl::status
         absl::statusor
+        absl::str_format
         absl::strings
         absl::synchronization
         absl::time
-        # absl::types
-        absl::utility
+        absl::any
         libuv
         )
