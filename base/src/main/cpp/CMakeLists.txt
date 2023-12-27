@@ -47,6 +47,18 @@ message("JSON_ROOT_DIR: ${JSON_ROOT_DIR}")
 add_subdirectory(${JSON_ROOT_DIR}  ${JSON_ROOT_DIR}/build)
 include_directories(${JSON_ROOT_DIR}/json/single_include)
 
+#[[set(ABSEIL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/prefix/absl)
+message("ABSEIL_ROOT_DIR: ${ABSEIL_ROOT_DIR}")
+include_directories(${ABSEIL_ROOT_DIR}/${ANDROID_ABI}/include)
+
+add_library(libabsl
+        STATIC
+        IMPORTED)
+
+set_target_properties(libabsl
+        PROPERTIES IMPORTED_LOCATION
+        ${ABSEIL_ROOT_DIR}/${ANDROID_ABI}/libabsl.a)]]
+
 set(ABSEIL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/abseil-cpp)
 message("ABSEIL_ROOT_DIR: ${ABSEIL_ROOT_DIR}")
 add_subdirectory(${ABSEIL_ROOT_DIR}  ${ABSEIL_ROOT_DIR}/build)
@@ -194,7 +206,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         thread_local.cc
         thread_local.h
 
-        #[[curl/curl_api.h
+        curl/curl_api.h
         curl/curl_api.cc
         curl/curl_header_parser.h
         curl/curl_header_parser.cc
@@ -206,7 +218,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         curl/curl_http_response.cc
         curl/http_client.h
         curl/http_client_util.h
-        curl/http_client_util.cc]]
+        curl/http_client_util.cc
         )
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
@@ -233,6 +245,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         # absl::profiling
         # absl::random
         absl::status
+        absl::statusor
         absl::strings
         absl::synchronization
         absl::time

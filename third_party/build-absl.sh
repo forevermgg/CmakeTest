@@ -19,8 +19,8 @@ if [ -d $WORK_DIR/prefix/absl ]; then
     exit 0
 fi
 
-# for ARCH in armeabi-v7a arm64-v8a x86 x86_64; do
-for ARCH in armeabi-v7a; do
+for ARCH in armeabi-v7a arm64-v8a x86 x86_64; do
+# for ARCH in armeabi-v7a; do
     cd "$ABSL_DIR"
     build_directory="$PWD/build"
     if [ -d "build_directory" ]; then
@@ -37,15 +37,18 @@ for ARCH in armeabi-v7a; do
     else
       echo "Directory $build_directory does not exist."
     fi
-    $ANDROID_SDK_HOME/cmake/3.10.2.4988404/bin/cmake -DCMAKE_CXX_STANDARD=17 -DCMAKE_TOOLCHAIN_FILE=$ANDROID_SDK_HOME/ndk/20.0.5594570/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DANDROID_ABI=$ARCH -DANDROID_PLATFORM=android-24 -DCMAKE_INSTALL_PREFIX=$ABSL_DIR/static/$ARCH/lib/ -DBUILD_SHARED_LIBS=OFF -L  ..
+    $ANDROID_SDK_HOME/cmake/3.10.2.4988404/bin/cmake -DCMAKE_CXX_STANDARD=17 -DCMAKE_TOOLCHAIN_FILE=$ANDROID_SDK_HOME/ndk/20.0.5594570/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DANDROID_ABI=$ARCH -DANDROID_PLATFORM=android-24 -DCMAKE_INSTALL_PREFIX=$WORK_DIR/prefix/absl/$ARCH/ -DBUILD_SHARED_LIBS=OFF -L  ..
     make && make install
     cd "$ABSL_DIR"
-    find ./ -name "*.o" | xargs ar cr libabsl.a
-    cp $ABSL_DIR/libabsl.a $ABSL_DIR/static/$ARCH/lib/
+    # find ./ -name "*.o" | xargs ar cr libabsl.a
+    find . -name "*.o" | xargs -n1 #打印一下所有.o。
+    find . -name "*.o" | xargs ar -rcs libabsl.a #把所有.o生成.a
+    ranlib libabsl.a
+    cp $ABSL_DIR/libabsl.a $WORK_DIR/prefix/absl/$ARCH/
     rm -rf libabsl.a
+    rm -rf $WORK_DIR/prefix/absl/$ARCH/lib
     cd "$WORK_DIR"
     cd ../
-    $ANDROID_SDK_HOME/cmake/3.10.2.4988404/bin/cmake --build build
-    ls -lh build
     echo "pwd = `pwd` $WORK_DIR"
 done
+### hava a bug 不能使用
