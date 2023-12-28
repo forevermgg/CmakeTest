@@ -2,7 +2,12 @@ cmake_minimum_required(VERSION 3.22.1)
 
 project("base")
 
-set(OPENSSL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/prefix/openssl)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+
+#[[set(OPENSSL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/prefix/openssl)
 message("OPENSSL_ROOT_DIR: ${OPENSSL_ROOT_DIR}")
 include_directories(${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/include)
 message("OPENSSL_INCLUDE_DIR: ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/include")
@@ -21,7 +26,7 @@ add_library(openssl-ssl
 
 set_target_properties(openssl-ssl
         PROPERTIES IMPORTED_LOCATION
-        ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/lib/libssl.a)
+        ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/lib/libssl.a)]]
 
 set(LIBUV_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/prefix/libuv)
 message("LIBUV_ROOT_DIR: ${LIBUV_ROOT_DIR}")
@@ -42,6 +47,18 @@ message("JSON_ROOT_DIR: ${JSON_ROOT_DIR}")
 add_subdirectory(${JSON_ROOT_DIR}  ${JSON_ROOT_DIR}/build)
 include_directories(${JSON_ROOT_DIR}/json/single_include)
 
+#[[set(ABSEIL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/prefix/absl)
+message("ABSEIL_ROOT_DIR: ${ABSEIL_ROOT_DIR}")
+include_directories(${ABSEIL_ROOT_DIR}/${ANDROID_ABI}/include)
+
+add_library(libabsl
+        STATIC
+        IMPORTED)
+
+set_target_properties(libabsl
+        PROPERTIES IMPORTED_LOCATION
+        ${ABSEIL_ROOT_DIR}/${ANDROID_ABI}/libabsl.a)]]
+
 set(ABSEIL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/abseil-cpp)
 message("ABSEIL_ROOT_DIR: ${ABSEIL_ROOT_DIR}")
 add_subdirectory(${ABSEIL_ROOT_DIR}  ${ABSEIL_ROOT_DIR}/build)
@@ -60,6 +77,10 @@ message("FLATBUFFERS_SRC_INCLUDE ${FLATBUFFERS_SRC_INCLUDE}")
 add_subdirectory(flatbuffers)
 include_directories(${FLATBUFFERS_SRC_INCLUDE})
 FILE(GLOB Generated_SRCS generated/*.h)
+
+
+find_package(curl REQUIRED CONFIG)
+find_package(jsoncpp REQUIRED CONFIG)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
@@ -184,33 +205,91 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         string_conversion.h
         thread_local.cc
         thread_local.h
+
+        curl/curl_api.h
+        curl/curl_api.cc
+        curl/curl_header_parser.h
+        curl/curl_header_parser.cc
+        curl/curl_http_client.h
+        curl/curl_http_client.cc
+        curl/curl_http_request_handle.h
+        curl/curl_http_request_handle.cc
+        curl/curl_http_response.h
+        curl/curl_http_response.cc
+        curl/http_client.h
+        curl/http_client_util.h
+        curl/http_client_util.cc
         )
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
+        flatbuffers
+        curl::curl
+        jsoncpp::jsoncpp
         android
         log
-        openssl-ssl openssl-crypto
+        #[[openssl-ssl openssl-crypto]]
         nlohmann_json::nlohmann_json
-        absl::base
+        absl::core_headers
+        absl::absl_check
+        absl::absl_log
         absl::algorithm
+        absl::base
+        absl::bind_front
+        absl::bits
+        absl::btree
+        absl::check
         absl::cleanup
-        # absl::container
-        # absl::crc
+        absl::cord
+        absl::core_headers
+        absl::die_if_null
         absl::debugging
+        absl::dynamic_annotations
         absl::flags
+        absl::flat_hash_map
+        absl::flat_hash_set
+        absl::function_ref
+        absl::flags_commandlineflag
+        absl::flags_marshalling
+        absl::flags_parse
+        absl::flags_reflection
+        absl::flags_usage
         absl::hash
+        absl::layout
+        absl::log_initialize
+        absl::log_severity
         absl::log
+        absl::log_flags
+        absl::log_globals
+        absl::log_initialize
+        absl::log_internal_message
         absl::memory
-        absl::numeric
-        # absl::profiling
-        # absl::random
+        absl::node_hash_map
+        absl::node_hash_set
+        absl::optional
+        absl::span
         absl::status
+        absl::statusor
         absl::strings
         absl::synchronization
         absl::time
-        # absl::types
+        absl::type_traits
         absl::utility
+        absl::variant
+        absl::cord
+        absl::random_random
+        absl::raw_hash_set
+        absl::hash
+        absl::leak_check
+        absl::memory
+        absl::meta
+        absl::stacktrace
+        absl::status
+        absl::statusor
+        absl::str_format
+        absl::strings
+        absl::synchronization
+        absl::time
+        absl::any
         libuv
-        flatbuffers
         )

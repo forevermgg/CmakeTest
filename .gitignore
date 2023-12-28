@@ -18,3 +18,7 @@ local.properties
 /third_party/boringssl/
 /third_party/flatbuffers/
 /third_party/protobuf/
+/third_party/prefix/*
+/third_party/*
+/boringssl/
+/openssl/

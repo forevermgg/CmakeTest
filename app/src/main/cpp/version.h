@@ -1,3 +1,3 @@
-const char* GIT_COMMIT_ID="89206c1fe230bb2e762bd2cc4874c5fddedb8c66";
+const char* GIT_COMMIT_ID="52fb2d569737e06d85ad163c796b022a74d6aed8";
 const char* GIT_TAG="";
 const char* GIT_BRANCH="main";
