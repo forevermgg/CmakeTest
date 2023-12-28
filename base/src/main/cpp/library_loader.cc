@@ -45,7 +45,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     return JNI_ERR;
   } else {
     FOREVER::JNI_UTIL::JniUtils::initialize(vm, JNI_VERSION_1_6);
-    FOREVER::_impl::JavaClassGlobalDef::initialize(env);
+    // FOREVER::_impl::JavaClassGlobalDef::initialize(env);
   }
   VirtualMachineEnv::JNI_OnLoad(vm);
   return JNI_VERSION_1_6;
@@ -56,7 +56,7 @@ extern "C" JNIEXPORT void JNI_OnUnload(JavaVM* vm, void*) {
   if (vm->GetEnv((void**)&env, JNI_VERSION_1_6) != JNI_OK) {
     return;
   } else {
-    FOREVER::_impl::JavaClassGlobalDef::release();
+    // FOREVER::_impl::JavaClassGlobalDef::release();
     FOREVER::JNI_UTIL::JniUtils::release();
   }
 }
