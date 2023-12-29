@@ -62,5 +62,6 @@ MoveToLambdaWrapper<std::remove_reference_t<T>> MoveToLambda(T&& value) {
       "you might as well put it in the lambda-capture list directly.");
   return MoveToLambdaWrapper<std::remove_reference_t<T>>(
       std::forward<T>(value));
+
 }
 
