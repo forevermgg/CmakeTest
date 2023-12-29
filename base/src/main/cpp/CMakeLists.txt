@@ -219,6 +219,9 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         curl/http_client.h
         curl/http_client_util.h
         curl/http_client_util.cc
+        curl/move_to_lambda.h
+        curl/scheduler.cc
+        curl/scheduler.h
         )
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
