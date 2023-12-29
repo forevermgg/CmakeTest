@@ -55,6 +55,6 @@ for ARCH in armeabi-v7a arm64-v8a x86 x86_64; do
                                                     ..
 
     $ANDROID_SDK_HOME/cmake/3.10.2.4988404/bin/cmake --build . --target libprotobuf
-    $ANDROID_SDK_HOME/cmake/3.10.2.4988404/bin/cmake --build . --target libprotobuf-lite
+    # $ANDROID_SDK_HOME/cmake/3.10.2.4988404/bin/cmake --build . --target libprotobuf-lite
     # make install
 done
