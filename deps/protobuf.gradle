@@ -4,7 +4,7 @@ afterEvaluate {
     println "projectDir:" + projectDir
     println "rootDir:" + rootDir
     println "buildDir:" + buildDir
-    task generateProtobufFiles {
+    tasks.register('generateProtobufFiles') {
         // Locate or download protobuf.
         def protobufDir = "$rootDir/third_party/protobuf"
         def protobufFolder = new File(protobufDir)
@@ -63,7 +63,7 @@ afterEvaluate {
         }
     }
 
-    task generateProtoCpp(type: Exec) {
+    tasks.register('generateProtoCpp', Exec) {
         def protobufExeDir = "$rootDir/third_party/protobuf/bazel-build"
         def inputDir = file("$projectDir/src/main/proto")
         def outputCppDir = file("$projectDir/src/main/cpp/generated/proto/")
@@ -90,7 +90,7 @@ afterEvaluate {
         }
     }
 
-    task generateProtoKotlin(type: Exec) {
+    tasks.register('generateProtoKotlin', Exec) {
         def protobufExeDir = "$rootDir/third_party/protobuf/bazel-build"
         def inputDir = file("$projectDir/src/main/proto")
         def outputKotlinDir = file("$projectDir/src/main/java/generated/proto/")

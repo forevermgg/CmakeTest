@@ -5,7 +5,7 @@ afterEvaluate {
     println "projectDir:"+projectDir;
     println "rootDir:"+rootDir;
     println "buildDir:"+buildDir;
-    task generateFlatbufferFiles {
+    tasks.register('generateFlatbufferFiles') {
         // Locate or download flatbuffers.
         def flatbuffersDir = "$rootDir/third_party/flatbuffers"
         def flatbuffersFolder = new File(flatbuffersDir)
@@ -56,7 +56,7 @@ afterEvaluate {
         }
     }
 
-    task generateFbsCpp(type: Exec) {
+    tasks.register('generateFbsCpp', Exec) {
         def flatbuffersExeDir = "$rootDir/third_party/flatbuffers/flatc_build"
         def inputDir = file("$projectDir/src/main/fbs")
         def outputCppDir = file("$projectDir/src/main/cpp/generated/fbs/")
@@ -66,7 +66,7 @@ afterEvaluate {
         standardOutput = new ByteArrayOutputStream()
         errorOutput = new ByteArrayOutputStream()
         def commandLineArgs = [flatbuffersExeDir + "/flatc", '-o', outputCppDir, '--cpp']
-        fbsFiles.forEach{
+        fbsFiles.forEach {
             commandLineArgs.add(it.path)
         }
 
@@ -84,7 +84,7 @@ afterEvaluate {
         }
     }
 
-    task generateFbsKotlin(type: Exec) {
+    tasks.register('generateFbsKotlin', Exec) {
         def flatbuffersExeDir = "$rootDir/third_party/flatbuffers/flatc_build"
         def inputDir = file("$projectDir/src/main/fbs")
         def outputKotlinDir = file("$projectDir/src/main/java/generated/fbs/")
@@ -98,7 +98,7 @@ afterEvaluate {
         setStandardOutput(standardOutput)
 
         def commandLineArgs = [flatbuffersExeDir + "/flatc", '-o', outputKotlinDir, '--kotlin']
-        fbsFiles.forEach{
+        fbsFiles.forEach {
             commandLineArgs.add(it.path)
         }
         commandLine commandLineArgs
