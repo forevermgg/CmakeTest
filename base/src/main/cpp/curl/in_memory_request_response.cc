@@ -19,7 +19,7 @@
 #include <absl/strings/string_view.h>
 #include <absl/synchronization/mutex.h>
 #include "http_client.h"
-#include "http/http_client_util.h"
+#include "http_client_util.h"
 #include "interruptible_runner.h"
 #include "google/protobuf/io/gzip_stream.h"
 #include "google/protobuf/io/zero_copy_stream_impl_lite.h"
@@ -49,7 +49,12 @@ absl::StatusOr<std::unique_ptr<HttpRequest>> InMemoryHttpRequest::Create(
         absl::StrCat("Non-HTTPS URIs are not supported: ", uri));
   }
   if (use_compression) {
-    FCP_ASSIGN_OR_RETURN(body, internal::CompressWithGzip(body));
+    // FCP_ASSIGN_OR_RETURN(body, internal::CompressWithGzip(body));
+    auto statusor = internal::CompressWithGzip(body);
+    if (!statusor.ok()) {
+      return statusor.status();
+    }
+    body = std::move(statusor).value();
     extra_headers.push_back({kContentEncodingHdr, kGzipEncodingHdrValue});
   }
   std::optional<std::string> content_length_hdr =
@@ -91,8 +96,8 @@ absl::StatusOr<int64_t> InMemoryHttpRequest::ReadBody(char* buffer,
   if (bytes_left == 0) {
     return absl::OutOfRangeError("End of stream reached");
   }
-  FCP_CHECK(buffer != nullptr);
-  FCP_CHECK(requested > 0);
+  // FCP_CHECK(buffer != nullptr);
+  // FCP_CHECK(requested > 0);
   // Calculate how much data we can return, based on the size of `buffer`.
   int64_t actual_read = bytes_left <= requested ? bytes_left : requested;
   std::memcpy(buffer, body_.data() + cursor_, actual_read);
@@ -236,7 +241,11 @@ void InMemoryHttpRequestCallback::OnResponseCompleted(
 absl::StatusOr<InMemoryHttpResponse> InMemoryHttpRequestCallback::Response()
     const {
   absl::ReaderMutexLock _(&mutex_);
-  FCP_RETURN_IF_ERROR(status_);
+  do {
+    if (status_.code() != absl::StatusCode::kOk) {
+      return (status_);
+    }
+  } while (false);
   // If status_ is OK, then response_code_ and response_headers_ are guaranteed
   // to have values.
 
@@ -246,24 +255,27 @@ absl::StatusOr<InMemoryHttpResponse> InMemoryHttpRequestCallback::Response()
 
 absl::StatusOr<InMemoryHttpResponse> PerformRequestInMemory(
     HttpClient& http_client, InterruptibleRunner& interruptible_runner,
-    std::unique_ptr<http::HttpRequest> request, int64_t* bytes_received_acc,
+    std::unique_ptr<HttpRequest> request, int64_t* bytes_received_acc,
     int64_t* bytes_sent_acc) {
   // Note: we must explicitly instantiate a vector here as opposed to passing an
   // initializer list to PerformRequestsInMemory, because initializer lists do
   // not support move-only values.
-  std::vector<std::unique_ptr<http::HttpRequest>> requests;
+  std::vector<std::unique_ptr<HttpRequest>> requests;
   requests.push_back(std::move(request));
-  FCP_ASSIGN_OR_RETURN(
-      auto result, PerformMultipleRequestsInMemory(
-                       http_client, interruptible_runner, std::move(requests),
-                       bytes_received_acc, bytes_sent_acc));
+  auto statusor = PerformMultipleRequestsInMemory(
+            http_client, interruptible_runner, std::move(requests),
+            bytes_received_acc, bytes_sent_acc);
+  if (!statusor.ok()) {
+    return statusor.status();
+  }
+  auto result  = std::move(statusor).value();
   return std::move(result[0]);
 }
 
 absl::StatusOr<std::vector<absl::StatusOr<InMemoryHttpResponse>>>
 PerformMultipleRequestsInMemory(
     HttpClient& http_client, InterruptibleRunner& interruptible_runner,
-    std::vector<std::unique_ptr<http::HttpRequest>> requests,
+    std::vector<std::unique_ptr<HttpRequest>> requests,
     int64_t* bytes_received_acc, int64_t* bytes_sent_acc) {
   // A vector that will own the request handles and callbacks (and will
   // determine their lifetimes).
@@ -317,7 +329,11 @@ PerformMultipleRequestsInMemory(
     }
   }
 
-  FCP_RETURN_IF_ERROR(result);
+  do {
+    if (result.code() != absl::StatusCode::kOk) {
+      return (result);
+    }
+ } while (false);
 
   // Gather and return the results.
   std::vector<absl::StatusOr<InMemoryHttpResponse>> results;

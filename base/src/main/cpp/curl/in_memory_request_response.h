@@ -119,7 +119,7 @@ class InMemoryHttpRequestCallback : public HttpRequestCallback {
 // Returns an error if the request failed.
 absl::StatusOr<InMemoryHttpResponse> PerformRequestInMemory(
     HttpClient& http_client, InterruptibleRunner& interruptible_runner,
-    std::unique_ptr<http::HttpRequest> request, int64_t* bytes_received_acc,
+    std::unique_ptr<HttpRequest> request, int64_t* bytes_received_acc,
     int64_t* bytes_sent_acc);
 
 // Utility for performing multiple HTTP requests and returning the results
@@ -131,7 +131,7 @@ absl::StatusOr<InMemoryHttpResponse> PerformRequestInMemory(
 absl::StatusOr<std::vector<absl::StatusOr<InMemoryHttpResponse>>>
 PerformMultipleRequestsInMemory(
     HttpClient& http_client, InterruptibleRunner& interruptible_runner,
-    std::vector<std::unique_ptr<http::HttpRequest>> requests,
+    std::vector<std::unique_ptr<HttpRequest>> requests,
     int64_t* bytes_received_acc, int64_t* bytes_sent_acc);
 
 // Simple class representing a resource for which data is already available
