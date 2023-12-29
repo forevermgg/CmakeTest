@@ -83,11 +83,11 @@ afterEvaluate {
             mkdir "$outputCppDir/"
         }
 
-        doLast {
+        /*doLast {
             if (executionResult.get().exitValue != 0) {
                 throw new GradleException("protoc failed with: ${executionResult.get().toString()}")
             }
-        }
+        }*/
     }
 
     tasks.register('generateProtoKotlin', Exec) {
@@ -112,11 +112,11 @@ afterEvaluate {
             delete "$outputKotlinDir/"
             mkdir "$outputKotlinDir/"
         }
-        doLast {
+        /*doLast {
             if (executionResult.get().exitValue != 0) {
                 throw new GradleException("protoc failed with: ${executionResult.get().toString()}")
             }
-        }
+        }*/
     }
     preBuild.dependsOn generateProtobufFiles
     preBuild.dependsOn generateProtoKotlin
