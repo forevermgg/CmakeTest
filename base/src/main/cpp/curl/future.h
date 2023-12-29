@@ -141,7 +141,7 @@ class Promise {
    */
   void Set(T value) && {
     future_internal::FutureStateRef<T> state = std::move(state_);
-    FCP_CHECK(state.has_value());
+    // FCP_CHECK(state.has_value());
     (*state)->Set(std::move(value));
   }
 

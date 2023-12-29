@@ -223,6 +223,8 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         curl/scheduler.h
         curl/future.h
         curl/future.cc
+        curl/interruptible_runner.h
+        curl/interruptible_runner.cc
         )
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
