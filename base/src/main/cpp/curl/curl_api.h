@@ -2,10 +2,10 @@
 #include <curl/curl.h>
 
 #include <memory>
-#include <mutex>
 #include <string>
 #include <type_traits>
 
+#include <absl/synchronization/mutex.h>
 // An RAII wrapper around the libcurl easy handle, which works with one request.
 // The class is not thread-safe.
 class CurlEasyHandle {
@@ -25,10 +25,10 @@ class CurlEasyHandle {
   }
 
   // Converts the curl code into a human-readable form.
-  static std::string StrError(CURLcode code);
+  ABSL_MUST_USE_RESULT static std::string StrError(CURLcode code);
 
   // Returns the underlying curl handle.
-  CURL* GetEasyHandle() const;
+  ABSL_MUST_USE_RESULT CURL* GetEasyHandle() const;
 
  private:
   friend class CurlApi;
@@ -63,7 +63,7 @@ class CurlMultiHandle {
                  int timeout_ms, int* numfds);
 
   // Converts the curl code into a human-readable form.
-  static std::string StrError(CURLMcode code);
+  ABSL_MUST_USE_RESULT static std::string StrError(CURLMcode code);
 
  private:
   friend class CurlApi;
@@ -82,9 +82,10 @@ class CurlApi {
   CurlApi(const CurlApi&) = delete;
   CurlApi& operator=(const CurlApi&) = delete;
 
-  std::unique_ptr<CurlEasyHandle> CreateEasyHandle() const;
-  std::unique_ptr<CurlMultiHandle> CreateMultiHandle() const;
+  ABSL_MUST_USE_RESULT std::unique_ptr<CurlEasyHandle> CreateEasyHandle() const;
+  ABSL_MUST_USE_RESULT std::unique_ptr<CurlMultiHandle> CreateMultiHandle()
+      const;
 
  private:
-  mutable std::mutex mutex_;
+  mutable absl::Mutex mutex_;
 };

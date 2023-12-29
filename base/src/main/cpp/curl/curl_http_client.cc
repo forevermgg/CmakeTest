@@ -85,9 +85,13 @@ absl::Status CurlHttpClient::PerformRequests(
 
     auto http_request_handle =
         static_cast<CurlHttpRequestHandle*>(request_handle);
-    // FCP_RETURN_IF_ERROR(
-        http_request_handle->AddToMulti(multi_handle.get(), callback);
-    //    );
+
+    do {
+      absl::Status expr =  http_request_handle->AddToMulti(multi_handle.get(), callback);
+      if (expr.code() != absl::StatusCode::kOk) {
+        return expr;
+      }
+    } while (false);
   }
 
   return PerformMultiHandlesBlocked(multi_handle.get());

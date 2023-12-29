@@ -2,4 +2,4 @@
 #include <string>
 
 const std::string GIT_BRANCH = "main";
-const std::string GIT_COMMIT_ID = "2b4f3c8309b52461015ab291fbd749f8b42a5ee7";
+const std::string GIT_COMMIT_ID = "8388c44b17e19db1cdb79739107268fed755cd88";
