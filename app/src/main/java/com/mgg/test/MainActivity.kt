@@ -17,8 +17,9 @@ class MainActivity : AppCompatActivity() {
 
         // Example of a call to a native method
         binding.sampleText.text = stringFromJNI()
-
-        binding.sampleText.text = NativeLib().stringFromJNI()
+        binding.sampleText.setOnClickListener {
+            binding.sampleText.text = NativeLib().stringFromJNI()
+        }
     }
 
     /**
