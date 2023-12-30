@@ -21,16 +21,9 @@
 #include "http_client.h"
 #include "http_client_util.h"
 #include "interruptible_runner.h"
-#include "google/protobuf/io/gzip_stream.h"
-#include "google/protobuf/io/zero_copy_stream_impl_lite.h"
 
 namespace client {
 namespace http {
-
-using ::google::protobuf::io::ArrayInputStream;
-using ::google::protobuf::io::GzipInputStream;
-using ::google::protobuf::io::GzipOutputStream;
-using ::google::protobuf::io::StringOutputStream;
 
 using CompressionFormat =
     client::http::UriOrInlineData::InlineData::CompressionFormat;
@@ -47,15 +40,6 @@ absl::StatusOr<std::unique_ptr<HttpRequest>> InMemoryHttpRequest::Create(
       !absl::StartsWithIgnoreCase(uri, kLocalhostUri)) {
     return absl::InvalidArgumentError(
         absl::StrCat("Non-HTTPS URIs are not supported: ", uri));
-  }
-  if (use_compression) {
-    // FCP_ASSIGN_OR_RETURN(body, internal::CompressWithGzip(body));
-    auto statusor = internal::CompressWithGzip(body);
-    if (!statusor.ok()) {
-      return statusor.status();
-    }
-    body = std::move(statusor).value();
-    extra_headers.push_back({kContentEncodingHdr, kGzipEncodingHdrValue});
   }
   std::optional<std::string> content_length_hdr =
       FindHeader(extra_headers, kContentLengthHdr);
@@ -343,74 +327,5 @@ PerformMultipleRequestsInMemory(
   }
   return results;
 }
-
-namespace internal {
-absl::StatusOr<std::string> CompressWithGzip(
-    const std::string& uncompressed_data) {
-  int starting_pos = 0;
-  size_t str_size = uncompressed_data.length();
-  size_t in_size = str_size;
-  std::string output;
-  StringOutputStream string_output_stream(&output);
-  GzipOutputStream::Options options;
-  options.format = GzipOutputStream::GZIP;
-  GzipOutputStream compressed_stream(&string_output_stream, options);
-  void* out;
-  int out_size;
-  while (starting_pos < str_size) {
-    if (!compressed_stream.Next(&out, &out_size) || out_size <= 0) {
-      return absl::InternalError(
-          absl::StrCat("An error has occurred during compression: ",
-                       compressed_stream.ZlibErrorMessage()));
-    }
-
-    if (in_size <= out_size) {
-      uncompressed_data.copy(static_cast<char*>(out), in_size, starting_pos);
-      // Ensure that the stream's output buffer is truncated to match the total
-      // amount of data.
-      compressed_stream.BackUp(out_size - static_cast<int>(in_size));
-      break;
-    }
-    uncompressed_data.copy(static_cast<char*>(out), out_size, starting_pos);
-    starting_pos += out_size;
-    in_size -= out_size;
-  }
-
-  if (!compressed_stream.Close()) {
-    return absl::InternalError(absl::StrCat(
-        "Failed to close the stream: ", compressed_stream.ZlibErrorMessage()));
-  }
-  return output;
-}
-
-absl::StatusOr<absl::Cord> UncompressWithGzip(
-    const std::string& compressed_data) {
-  absl::Cord out;
-  const void* buffer;
-  int size;
-  ArrayInputStream sub_stream(compressed_data.data(),
-                              static_cast<int>(compressed_data.size()));
-  GzipInputStream input_stream(&sub_stream, GzipInputStream::GZIP);
-
-  while (input_stream.Next(&buffer, &size)) {
-    if (size <= -1) {
-      return absl::InternalError(
-          "Uncompress failed: invalid input size returned by the "
-          "GzipInputStream.");
-    }
-    out.Append(absl::string_view(reinterpret_cast<const char*>(buffer), size));
-  }
-
-  if (input_stream.ZlibErrorMessage() != nullptr) {
-    // Some real error happened during decompression.
-    return absl::InternalError(
-        absl::StrCat("An error has occurred during decompression:",
-                     input_stream.ZlibErrorMessage()));
-  }
-
-  return out;
-}
-
-}  // namespace internal
 }  // namespace http
 }  // namespace client

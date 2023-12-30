@@ -213,8 +213,8 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         curl/future.cc
         curl/interruptible_runner.h
         curl/interruptible_runner.cc
-       #[[ curl/in_memory_request_response.h
-        curl/in_memory_request_response.cc]]
+        curl/in_memory_request_response.h
+        curl/in_memory_request_response.cc
         )
 
 target_link_libraries(${CMAKE_PROJECT_NAME}

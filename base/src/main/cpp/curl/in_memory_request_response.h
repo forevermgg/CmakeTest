@@ -187,15 +187,5 @@ class UriOrInlineData {
   const InlineData inline_data_;
 };
 
-
-
-// Used by the class and in tests only.
-namespace internal {
-absl::StatusOr<std::string> CompressWithGzip(
-    const std::string& uncompressed_data);
-absl::StatusOr<absl::Cord> UncompressWithGzip(
-    const std::string& compressed_data);
-}  // namespace internal
-
 };  // namespace http
 };  // namespace client
