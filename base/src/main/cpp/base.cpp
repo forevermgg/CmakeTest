@@ -7,6 +7,8 @@
 #include "curl/in_memory_request_response.h"
 #include "absl/synchronization/blocking_counter.h"
 #include "curl/curl_http_client.h"
+#include "log_settings.h"
+#include "logging.h"
 
 
 absl::Status testNormalWithAbortCheckButNoAbort() {
@@ -84,5 +86,6 @@ Java_com_mgg_base_NativeLib_stringFromJNI(
                     // stats, to ensure they are correctly updated.
                     &bytes_received, &bytes_sent);
     std::string hello = StatusCodeToString(results.status().code());
+    BASE_LOG(ERROR) << "StatusCodeToString = " << hello;
     return env->NewStringUTF(hello.c_str());
 }
