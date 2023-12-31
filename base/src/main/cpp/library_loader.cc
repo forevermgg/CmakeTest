@@ -8,6 +8,36 @@
 #include "jni/java_class_global_def.hpp"
 #include "jni/jni_utils.hpp"
 #include "common/VirtualMachineEnv.h"
+#include "absl/log/log_entry.h"
+#include <android/log.h>
+#include <absl/base/log_severity.h>
+
+
+void AndroidLogSink(void*, const absl::LogEntry& entry) {
+    int androidLogPriority = ANDROID_LOG_UNKNOWN;
+
+    switch (entry.log_severity()) {
+        case absl::LogSeverity::kFatal:
+            androidLogPriority = ANDROID_LOG_FATAL;
+            break;
+        case absl::LogSeverity::kError:
+            androidLogPriority = ANDROID_LOG_ERROR;
+            break;
+        case absl::LogSeverity::kWarning:
+            androidLogPriority = ANDROID_LOG_WARN;
+            break;
+        case absl::LogSeverity::kInfo:
+            androidLogPriority = ANDROID_LOG_INFO;
+            break;
+        /*case absl::LogSeverity::kDebug:
+            androidLogPriority = ANDROID_LOG_DEBUG;
+            break;*/
+        default:
+            androidLogPriority = ANDROID_LOG_VERBOSE;
+    }
+
+    __android_log_print(androidLogPriority, "YOUR_TAG", "%s", entry.text_message_with_prefix_and_newline_c_str());
+}
 
 // This is called by the VM when the shared library is first loaded.
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
