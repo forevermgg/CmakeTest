@@ -28,6 +28,8 @@ inline CURLcode AsCode(CURLcode code) { return code; }
   do {                                                    \
     CURLcode __code = AsCode(expr);                       \
     if (__code != CURLE_OK) {                             \
+      ABSL_LOG(ERROR) << "Easy handle failed with "        \
+                     << CurlEasyHandle::StrError(__code); \
       return (__code);                                    \
     }                                                     \
   } while (false)

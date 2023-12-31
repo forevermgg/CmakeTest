@@ -21,6 +21,7 @@
 #include "http_client.h"
 #include "http_client_util.h"
 #include "interruptible_runner.h"
+#include "monitoring.h"
 
 namespace client {
 namespace http {
@@ -225,11 +226,7 @@ void InMemoryHttpRequestCallback::OnResponseCompleted(
 absl::StatusOr<InMemoryHttpResponse> InMemoryHttpRequestCallback::Response()
     const {
   absl::ReaderMutexLock _(&mutex_);
-  do {
-    if (status_.code() != absl::StatusCode::kOk) {
-      return (status_);
-    }
-  } while (false);
+  FCP_RETURN_IF_ERROR(status_);
   // If status_ is OK, then response_code_ and response_headers_ are guaranteed
   // to have values.
 
@@ -246,13 +243,10 @@ absl::StatusOr<InMemoryHttpResponse> PerformRequestInMemory(
   // not support move-only values.
   std::vector<std::unique_ptr<HttpRequest>> requests;
   requests.push_back(std::move(request));
-  auto statusor = PerformMultipleRequestsInMemory(
-            http_client, interruptible_runner, std::move(requests),
-            bytes_received_acc, bytes_sent_acc);
-  if (!statusor.ok()) {
-    return statusor.status();
-  }
-  auto result  = std::move(statusor).value();
+  FCP_ASSIGN_OR_RETURN(
+      auto result, PerformMultipleRequestsInMemory(
+                       http_client, interruptible_runner, std::move(requests),
+                       bytes_received_acc, bytes_sent_acc));
   return std::move(result[0]);
 }
 
@@ -313,11 +307,7 @@ PerformMultipleRequestsInMemory(
     }
   }
 
-  do {
-    if (result.code() != absl::StatusCode::kOk) {
-      return (result);
-    }
- } while (false);
+  FCP_RETURN_IF_ERROR(result);
 
   // Gather and return the results.
   std::vector<absl::StatusOr<InMemoryHttpResponse>> results;
