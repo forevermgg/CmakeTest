@@ -1,4 +1,5 @@
-**
+#pragma once
+/**
 * Macro which allows to check for a Status (or StatusOr) and return from the
 * current method if not OK. Example:
 *
