@@ -4,7 +4,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-
+#include <absl/log/absl_log.h>
 #include <absl/synchronization/mutex.h>
 #include "curl_http_request_handle.h"
 #include "http_client.h"
@@ -17,7 +17,7 @@ void ReadCompleteMessages(CurlMultiHandle* multi_handle) {
   int messages_in_queue = 0;
   while ((msg = multi_handle->InfoRead(&messages_in_queue))) {
     if (msg->msg == CURLMSG_DONE) {
-      // FCP_LOG(INFO) << CurlEasyHandle::StrError(msg->data.result);
+      ABSL_LOG(INFO) << CurlEasyHandle::StrError(msg->data.result);
       void* user_data;
       curl_easy_getinfo(msg->easy_handle, CURLINFO_PRIVATE, &user_data);
       // FCP_CHECK(user_data != nullptr);
@@ -35,7 +35,7 @@ absl::Status PerformMultiHandlesBlocked(CurlMultiHandle* multi_handle) {
   while (num_running_handles) {
     CURLMcode code = multi_handle->Perform(&num_running_handles);
     if (code != CURLM_OK) {
-      // FCP_LOG(ERROR) << "MultiPerform failed with code: " << code;
+      ABSL_LOG(ERROR) << "MultiPerform failed with code: " << code;
       return absl::InternalError(
           absl::StrCat("MultiPerform failed with code: ", code));
     }
@@ -60,12 +60,12 @@ CurlHttpClient::CurlHttpClient(CurlApi* curl_api, std::string test_cert_path)
 
 std::unique_ptr<HttpRequestHandle> CurlHttpClient::EnqueueRequest(
     std::unique_ptr<HttpRequest> request) {
-  /*FCP_LOG(INFO) << "Creating a " << ConvertMethodToString(request->method())
+  ABSL_LOG(INFO) << "Creating a " << ConvertMethodToString(request->method())
                 << " request to " << request->uri() << " with body "
                 << request->HasBody() << " with headers "
-                << request->extra_headers().size();*/
+                << request->extra_headers().size();
   for (const auto& [key, value] : request->extra_headers()) {
-    // FCP_LOG(INFO) << key << ": " << value;
+    ABSL_LOG(INFO) << key << ": " << value;
   }
 
   return std::make_unique<CurlHttpRequestHandle>(
@@ -74,7 +74,7 @@ std::unique_ptr<HttpRequestHandle> CurlHttpClient::EnqueueRequest(
 
 absl::Status CurlHttpClient::PerformRequests(
     std::vector<std::pair<HttpRequestHandle*, HttpRequestCallback*>> requests) {
-  // FCP_LOG(INFO) << "PerformRequests";
+  ABSL_LOG(INFO) << "PerformRequests";
   std::unique_ptr<CurlMultiHandle> multi_handle =
       curl_api_->CreateMultiHandle();
   // FCP_CHECK(multi_handle != nullptr);

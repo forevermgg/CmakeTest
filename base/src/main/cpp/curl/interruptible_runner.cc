@@ -2,7 +2,7 @@
 
 #include <functional>
 #include <utility>
-
+#include <absl/log/absl_log.h>
 #include <absl/status/status.h>
 
 
@@ -40,7 +40,7 @@ absl::Status InterruptibleRunner::WaitUntilDone(
 absl::Status InterruptibleRunner::Abort(
     thread::Future<absl::Status> run_future,
     std::function<void()> abort_function) {
-  // FCP_LOG(WARNING) << "Aborting run.";
+  ABSL_LOG(WARNING) << "Aborting run.";
 
   // Attempt to abort the ongoing call.
   abort_function();

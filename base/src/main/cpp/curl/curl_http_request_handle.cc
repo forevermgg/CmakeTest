@@ -7,6 +7,7 @@
 
 #include <absl/strings/match.h>
 #include <curl/curl.h>
+#include <absl/log/absl_log.h>
 #include "curl_api.h"
 #include "curl_header_parser.h"
 #include "curl_http_response.h"
@@ -63,7 +64,7 @@ size_t CurlHttpRequestHandle::HeaderCallback(char* buffer, size_t size,
       self->callback_->OnResponseStarted(*self->request_, *self->response_);
 
   if (!status.ok()) {
-    // FCP_LOG(ERROR) << "Called OnResponseStarted. Received status: " << status;
+    ABSL_LOG(ERROR) << "Called OnResponseStarted. Received status: " << status;
     self->callback_->OnResponseError(*self->request_, status);
   }
 
@@ -79,7 +80,7 @@ size_t CurlHttpRequestHandle::DownloadCallback(void* body, size_t size,
       *self->request_, *self->response_, str_body);
 
   if (!status.ok()) {
-    // FCP_LOG(ERROR) << "Called OnResponseBody. Received status: " << status;
+    ABSL_LOG(ERROR) << "Called OnResponseBody. Received status: " << status;
     self->callback_->OnResponseBodyError(*self->request_, *self->response_,
                                          status);
   }
@@ -130,9 +131,8 @@ CurlHttpRequestHandle::CurlHttpRequestHandle(
 
   CURLcode code = InitializeConnection(test_cert_path);
   if (code != CURLE_OK) {
-    // FCP_LOG(ERROR) << "easy_handle initialization failed with code "
-    CurlEasyHandle::StrError(code);
-    // FCP_LOG(ERROR) << error_buffer_;
+    ABSL_LOG(ERROR) << "easy_handle initialization failed with code " << CurlEasyHandle::StrError(code);
+    ABSL_LOG(ERROR) << error_buffer_;
     callback_->OnResponseError(*request_, absl::InternalError(error_buffer_));
     return;
   }
@@ -192,8 +192,8 @@ absl::Status CurlHttpRequestHandle::AddToMulti(CurlMultiHandle* multi_handle,
 
   CURLMcode code = multi_handle->AddEasyHandle(easy_handle_.get());
   if (code != CURLM_OK) {
-    // FCP_LOG(ERROR) << "AddEasyHandle failed with code " << code;
-    // FCP_LOG(ERROR) << error_buffer_;
+    ABSL_LOG(ERROR) << "AddEasyHandle failed with code " << code;
+    ABSL_LOG(ERROR) << error_buffer_;
     callback_->OnResponseError(*request_, absl::InternalError(error_buffer_));
     return absl::InternalError(error_buffer_);
   }
@@ -207,9 +207,8 @@ void CurlHttpRequestHandle::RemoveFromMulti(CurlMultiHandle* multi_handle) {
   // FCP_CHECK(multi_handle != nullptr);
   CURLMcode code = multi_handle->RemoveEasyHandle(easy_handle_.get());
   if (code != CURLM_OK) {
-    // FCP_LOG(ERROR) << "RemoveEasyHandle failed with code "
-    CurlMultiHandle::StrError(code);
-    // FCP_LOG(ERROR) << error_buffer_;
+    ABSL_LOG(ERROR) << "RemoveEasyHandle failed with code " << CurlMultiHandle::StrError(code);
+    ABSL_LOG(ERROR) << error_buffer_;
   }
 }
 
@@ -220,14 +219,14 @@ CurlHttpRequestHandle::TotalSentReceivedBytes() const {
   CURLcode code =
       easy_handle_->GetInfo(CURLINFO_SIZE_UPLOAD_T, &total_sent_bytes);
   if (code != CURLE_OK) {
-    // FCP_LOG(ERROR) << "TotalSentBytes failed with code " << code;
-    // FCP_LOG(ERROR) << error_buffer_;
+    ABSL_LOG(ERROR) << "TotalSentBytes failed with code " << code;
+    ABSL_LOG(ERROR) << error_buffer_;
   }
   curl_off_t total_received_bytes = 0;
   code = easy_handle_->GetInfo(CURLINFO_SIZE_DOWNLOAD_T, &total_received_bytes);
   if (code != CURLE_OK) {
-    // FCP_LOG(ERROR) << "TotalReceivedBytes failed with code " << code;
-    // FCP_LOG(ERROR) << error_buffer_;
+    ABSL_LOG(ERROR) << "TotalReceivedBytes failed with code " << code;
+    ABSL_LOG(ERROR) << error_buffer_;
   }
   return {.sent_bytes = total_sent_bytes,
           .received_bytes = total_received_bytes};
@@ -312,7 +311,7 @@ CURLcode CurlHttpRequestHandle::InitializeConnection(
       break;
     case HttpRequest::Method::kPatch:
     case HttpRequest::Method::kDelete:
-      // FCP_LOG(ERROR) << "Unsupported request type";
+      ABSL_LOG(ERROR) << "Unsupported request type";
       return CURLE_UNSUPPORTED_PROTOCOL;
   }
 
