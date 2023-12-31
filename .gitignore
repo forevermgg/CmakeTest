@@ -13,7 +13,8 @@
 .externalNativeBuild
 .cxx
 local.properties
-.idea/*
+/.idea/*
+/base/.idea/*
 /third_party/openssl/
 /third_party/boringssl/
 /third_party/flatbuffers/*
@@ -24,3 +25,4 @@ local.properties
 /third_party/*
 /boringssl/
 /openssl/
+.vscode/

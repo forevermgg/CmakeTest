@@ -262,6 +262,7 @@ CURLcode CurlHttpRequestHandle::InitializeConnection(
   CURL_RETURN_IF_ERROR(easy_handle_->SetOpt(CURLOPT_SSL_VERIFYPEER, 2L));
 
   CURL_RETURN_IF_ERROR(easy_handle_->SetOpt(CURLOPT_SSL_VERIFYHOST, 1L));
+  CURL_RETURN_IF_ERROR(easy_handle_->SetOpt(CURLOPT_SSL_VERIFYPEER, 0L));
 
   // Force curl to never timeout.
   CURL_RETURN_IF_ERROR(easy_handle_->SetOpt(CURLOPT_TIMEOUT_MS,
