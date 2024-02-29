@@ -4,7 +4,7 @@ afterEvaluate {
     println "projectDir:" + projectDir
     println "rootDir:" + rootDir
     println "buildDir:" + buildDir
-    task downloadDeps {
+    tasks.register('downloadDeps') {
         exec {
             executable 'git'
             args 'submodule',

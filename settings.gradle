@@ -10,3 +10,4 @@ rootProject.name = "CmakeTest"
 include ':app'
 include ':base'
 include ':deps'
+include ':libyuv'

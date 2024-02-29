@@ -43,7 +43,7 @@ afterEvaluate {
                 args '..'
                 workingDir "${flatcDir.getPath()}"
             }
-            // brew install cmak
+            // brew install cmake
             // Cannot run program "cmake"
             exec {
                 executable 'cmake'

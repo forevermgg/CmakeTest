@@ -1,0 +1,57 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+ext {
+    yuvSourceDir = "${project.rootDir.absolutePath}/third_party/libyuv"
+    System.out.println("yuvSourceDir = ${yuvSourceDir}")
+}
+
+
+android {
+    namespace = "com.google.libyuv"
+    compileSdk = 34
+    defaultConfig {
+        minSdk = 30
+        //noinspection EditedTargetSdkVersion
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+        externalNativeBuild {
+            cmake {
+                arguments "-DCMAKE_POLICY_DEFAULT_CMP0064=NEW", "-DCMAKE_VERBOSE_MAKEFILE=ON"
+                // Build only the static library target
+                targets "yuv"
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            version = "3.22.1"
+            path "${yuvSourceDir}/CMakeLists.txt"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    // Enable generation of Prefab packages and include them in the library's AAR.
+    buildFeatures {
+        prefabPublishing true
+    }
+
+    // Include the "libyuv" module from the native build system in the AAR,
+    // and export the headers in include to its consumers
+    prefab {
+        libyuv {
+            headers "${yuvSourceDir}/include"
+            name "yuv"
+        }
+    }
+}

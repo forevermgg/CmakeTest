@@ -6,8 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
-
-#[[set(OPENSSL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/prefix/openssl)
+set(OPENSSL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/prefix/openssl)
 message("OPENSSL_ROOT_DIR: ${OPENSSL_ROOT_DIR}")
 include_directories(${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/include)
 message("OPENSSL_INCLUDE_DIR: ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/include")
@@ -26,7 +25,7 @@ add_library(openssl-ssl
 
 set_target_properties(openssl-ssl
         PROPERTIES IMPORTED_LOCATION
-        ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/lib/libssl.a)]]
+        ${OPENSSL_ROOT_DIR}/${ANDROID_ABI}/lib/libssl.a)
 
 set(LIBUV_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/prefix/libuv)
 message("LIBUV_ROOT_DIR: ${LIBUV_ROOT_DIR}")
@@ -224,7 +223,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         jsoncpp::jsoncpp
         android
         log
-        #[[openssl-ssl openssl-crypto]]
+        openssl-ssl openssl-crypto
         nlohmann_json::nlohmann_json
         absl::core_headers
         absl::absl_check
