@@ -1,0 +1,6 @@
+#ifndef BASE_ASSERT_HPP
+#define BASE_ASSERT_HPP
+
+
+
+#endif // BASE_ASSERT_HPP

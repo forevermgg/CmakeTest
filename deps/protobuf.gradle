@@ -1,0 +1,124 @@
+afterEvaluate {
+    // Define a Task that will add a protobuf dependency, downloading
+    // the source from GitHub if needed.
+    println "projectDir:" + projectDir
+    println "rootDir:" + rootDir
+    println "buildDir:" + buildDir
+    tasks.register('generateProtobufFiles') {
+        // Locate or download protobuf.
+        def protobufDir = "$rootDir/third_party/protobuf"
+        def protobufFolder = new File(protobufDir)
+        if (!protobufFolder.exists()) {
+            exec {
+                executable 'git'
+                args 'clone',
+                        '--branch',
+                        'v25.1',
+                        '--depth',
+                        '5',
+                        'https://github.com/protocolbuffers/protobuf.git',
+                        protobufDir
+            }
+        }
+        println "protobufDir:" + protobufDir
+        exec {
+            executable 'git'
+            args 'submodule',
+                    'update',
+                    '--init',
+                    '--recursive'
+            workingDir "${protobufDir}"
+        }
+
+        // Locate or build protoc.
+        String protocDirPath = "$protobufDir/bazel-build"
+        def protocDir = new File(protocDirPath)
+        protocDir.mkdir()
+
+        String protocExecDirPath = protocDirPath
+        String protocFilename = "protoc"
+        if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+            protocFilename += ".exe"
+            protocExecDirPath = "$protocDirPath/Debug"
+        }
+
+        def protocExecDir = new File(protocExecDirPath)
+
+        def protocExec = new File(protocExecDir, protocFilename)
+        if (!protocExec.exists()) {
+            exec {
+                executable 'bazel'
+                args 'build',
+                        ':protoc',
+                        ':protobuf'
+                workingDir "${protobufDir}"
+            }
+
+            exec {
+                executable 'cp'
+                args 'bazel-bin/protoc',
+                        "${protocDirPath}"
+                workingDir "${protobufDir}"
+            }
+        }
+    }
+
+    tasks.register('generateProtoCpp', Exec) {
+        def protobufExeDir = "$rootDir/third_party/protobuf/bazel-build"
+        def inputDir = file("$projectDir/src/main/proto")
+        def outputCppDir = file("$projectDir/src/main/cpp/generated/proto/")
+        def protoFiles = layout.files { file(inputDir).listFiles() }.filter { File f -> f.name.endsWith(".proto") }.toList()
+        ignoreExitValue(true)
+
+        standardOutput = new ByteArrayOutputStream()
+        errorOutput = new ByteArrayOutputStream()
+        def commandLineArgs = ["${protobufExeDir}/protoc", "-I=${inputDir}", "--cpp_out=${outputCppDir}"]
+        protoFiles.forEach {
+            commandLineArgs.add(it.path)
+        }
+        commandLine commandLineArgs
+
+        doFirst {
+            delete "$outputCppDir/"
+            mkdir "$outputCppDir/"
+        }
+
+        /*doLast {
+            if (executionResult.get().exitValue != 0) {
+                throw new GradleException("protoc failed with: ${executionResult.get().toString()}")
+            }
+        }*/
+    }
+
+    tasks.register('generateProtoKotlin', Exec) {
+        def protobufExeDir = "$rootDir/third_party/protobuf/bazel-build"
+        def inputDir = file("$projectDir/src/main/proto")
+        def outputKotlinDir = file("$projectDir/src/main/java/generated/proto/")
+        def protoFiles = layout.files { file(inputDir).listFiles() }.filter { File f -> f.name.endsWith(".proto") }.toList()
+        ignoreExitValue(true)
+
+        standardOutput = new ByteArrayOutputStream()
+        errorOutput = new ByteArrayOutputStream()
+
+        setErrorOutput(errorOutput)
+        setStandardOutput(standardOutput)
+        def commandLineArgs = ["${protobufExeDir}/protoc", "-I=${inputDir}", "--java_out=${outputKotlinDir}"]
+        protoFiles.forEach {
+            commandLineArgs.add(it.path)
+        }
+        commandLine commandLineArgs
+
+        doFirst {
+            delete "$outputKotlinDir/"
+            mkdir "$outputKotlinDir/"
+        }
+        /*doLast {
+            if (executionResult.get().exitValue != 0) {
+                throw new GradleException("protoc failed with: ${executionResult.get().toString()}")
+            }
+        }*/
+    }
+    preBuild.dependsOn generateProtobufFiles
+    preBuild.dependsOn generateProtoKotlin
+    preBuild.dependsOn generateProtoCpp
+}

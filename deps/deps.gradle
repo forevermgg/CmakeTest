@@ -1,0 +1,18 @@
+afterEvaluate {
+    // Define a Task that will add a protobuf dependency, downloading
+    // the source from GitHub if needed.
+    println "projectDir:" + projectDir
+    println "rootDir:" + rootDir
+    println "buildDir:" + buildDir
+    tasks.register('downloadDeps') {
+        exec {
+            executable 'git'
+            args 'submodule',
+                    'update',
+                    '--init',
+                    '--recursive'
+            workingDir "${rootDir}"
+        }
+    }
+    preBuild.dependsOn downloadDeps
+}
